@@ -12,14 +12,24 @@
 		4D8176112101C9A600711BD6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4D8176092101C9A500711BD6 /* Main.storyboard */; };
 		4D8176132101C9A600711BD6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D81760D2101C9A500711BD6 /* ViewController.swift */; };
 		4D8176142101C9A600711BD6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D81760E2101C9A500711BD6 /* AppDelegate.swift */; };
+		4D8CA0E221024AFA005D0875 /* SampleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8CA0E021024AFA005D0875 /* SampleCell.swift */; };
+		4D8CA0E321024AFA005D0875 /* SampleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4D8CA0E121024AFA005D0875 /* SampleCell.xib */; };
+		4D8CA0F42102F2A6005D0875 /* Refreshable.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D8CA0F12102EE54005D0875 /* Refreshable.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		4D8176202101CF1E00711BD6 /* PBXContainerItemProxy */ = {
+		4D8CA0F02102EE54005D0875 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 4D81761C2101CF1E00711BD6 /* Refreshable.xcodeproj */;
+			containerPortal = 4D8CA0EC2102EE54005D0875 /* Refreshable.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 4D8175D02101BF4600711BD6;
+			remoteInfo = Refreshable;
+		};
+		4D8CA0F22102F2A1005D0875 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4D8CA0EC2102EE54005D0875 /* Refreshable.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4D8175CF2101BF4600711BD6;
 			remoteInfo = Refreshable;
 		};
 /* End PBXContainerItemProxy section */
@@ -32,7 +42,9 @@
 		4D81760B2101C9A500711BD6 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4D81760D2101C9A500711BD6 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		4D81760E2101C9A500711BD6 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		4D81761C2101CF1E00711BD6 /* Refreshable.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Refreshable.xcodeproj; path = ../Refreshable.xcodeproj; sourceTree = "<group>"; };
+		4D8CA0E021024AFA005D0875 /* SampleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleCell.swift; sourceTree = "<group>"; };
+		4D8CA0E121024AFA005D0875 /* SampleCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SampleCell.xib; sourceTree = "<group>"; };
+		4D8CA0EC2102EE54005D0875 /* Refreshable.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Refreshable.xcodeproj; path = ../Refreshable.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,6 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4D8CA0F42102F2A6005D0875 /* Refreshable.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -49,10 +62,11 @@
 		4D8175E62101C90B00711BD6 = {
 			isa = PBXGroup;
 			children = (
-				4D81761C2101CF1E00711BD6 /* Refreshable.xcodeproj */,
+				4D8CA0EC2102EE54005D0875 /* Refreshable.xcodeproj */,
 				4D8175F02101C90B00711BD6 /* Products */,
 				4D8176052101C9A500711BD6 /* Resources */,
 				4D81760C2101C9A500711BD6 /* Source */,
+				4D8CA0E42102EA64005D0875 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -78,16 +92,57 @@
 		4D81760C2101C9A500711BD6 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				4D81760D2101C9A500711BD6 /* ViewController.swift */,
+				4D81762B2101FE2F00711BD6 /* Model */,
+				4D81762A2101FE2900711BD6 /* Controller */,
+				4D8176292101FE2300711BD6 /* ViewModel */,
+				4D8176282101FDF000711BD6 /* View */,
 				4D81760E2101C9A500711BD6 /* AppDelegate.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
 		};
-		4D81761D2101CF1E00711BD6 /* Products */ = {
+		4D8176282101FDF000711BD6 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				4D8176212101CF1E00711BD6 /* Refreshable.framework */,
+				4D8CA0E021024AFA005D0875 /* SampleCell.swift */,
+				4D8CA0E121024AFA005D0875 /* SampleCell.xib */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		4D8176292101FE2300711BD6 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		4D81762A2101FE2900711BD6 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				4D81760D2101C9A500711BD6 /* ViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		4D81762B2101FE2F00711BD6 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		4D8CA0E42102EA64005D0875 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4D8CA0ED2102EE54005D0875 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4D8CA0F12102EE54005D0875 /* Refreshable.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -106,6 +161,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				4D8CA0F32102F2A1005D0875 /* PBXTargetDependency */,
 			);
 			name = "iOS Example";
 			productName = "iOS Example";
@@ -140,8 +196,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 4D81761D2101CF1E00711BD6 /* Products */;
-					ProjectRef = 4D81761C2101CF1E00711BD6 /* Refreshable.xcodeproj */;
+					ProductGroup = 4D8CA0ED2102EE54005D0875 /* Products */;
+					ProjectRef = 4D8CA0EC2102EE54005D0875 /* Refreshable.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -152,11 +208,11 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		4D8176212101CF1E00711BD6 /* Refreshable.framework */ = {
+		4D8CA0F12102EE54005D0875 /* Refreshable.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = Refreshable.framework;
-			remoteRef = 4D8176202101CF1E00711BD6 /* PBXContainerItemProxy */;
+			remoteRef = 4D8CA0F02102EE54005D0875 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -167,6 +223,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4D8176112101C9A600711BD6 /* Main.storyboard in Resources */,
+				4D8CA0E321024AFA005D0875 /* SampleCell.xib in Resources */,
 				4D81760F2101C9A600711BD6 /* Assets.xcassets in Resources */,
 				4D8176102101C9A600711BD6 /* LaunchScreen.storyboard in Resources */,
 			);
@@ -181,10 +238,19 @@
 			files = (
 				4D8176142101C9A600711BD6 /* AppDelegate.swift in Sources */,
 				4D8176132101C9A600711BD6 /* ViewController.swift in Sources */,
+				4D8CA0E221024AFA005D0875 /* SampleCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4D8CA0F32102F2A1005D0875 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Refreshable;
+			targetProxy = 4D8CA0F22102F2A1005D0875 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		4D8176072101C9A500711BD6 /* LaunchScreen.storyboard */ = {

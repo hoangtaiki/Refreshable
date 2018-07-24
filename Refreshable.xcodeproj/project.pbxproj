@@ -7,13 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4D8175DF2101C6E400711BD6 /* Refreshable.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D8175DD2101C6E400711BD6 /* Refreshable.h */; };
+		4D8175DF2101C6E400711BD6 /* Refreshable.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D8175DD2101C6E400711BD6 /* Refreshable.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4D8176232101DA3000711BD6 /* PullToRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8176222101DA3000711BD6 /* PullToRefresh.swift */; };
+		4D8176252101DA7F00711BD6 /* UIScrollView+PullToRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8176242101DA7F00711BD6 /* UIScrollView+PullToRefresh.swift */; };
+		4D8176272101E9D200711BD6 /* PullToRefreshAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8176262101E9D200711BD6 /* PullToRefreshAnimator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		4D8175D02101BF4600711BD6 /* Refreshable.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Refreshable.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D8175DD2101C6E400711BD6 /* Refreshable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Refreshable.h; sourceTree = "<group>"; };
 		4D8175E12101C73B00711BD6 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4D8176222101DA3000711BD6 /* PullToRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PullToRefresh.swift; sourceTree = "<group>"; };
+		4D8176242101DA7F00711BD6 /* UIScrollView+PullToRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+PullToRefresh.swift"; sourceTree = "<group>"; };
+		4D8176262101E9D200711BD6 /* PullToRefreshAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PullToRefreshAnimator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,6 +56,9 @@
 			children = (
 				4D8175E12101C73B00711BD6 /* Info.plist */,
 				4D8175DD2101C6E400711BD6 /* Refreshable.h */,
+				4D8176222101DA3000711BD6 /* PullToRefresh.swift */,
+				4D8176262101E9D200711BD6 /* PullToRefreshAnimator.swift */,
+				4D8176242101DA7F00711BD6 /* UIScrollView+PullToRefresh.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -111,6 +120,7 @@
 				TargetAttributes = {
 					4D8175CF2101BF4600711BD6 = {
 						CreatedOnToolsVersion = 9.4.1;
+						LastSwiftMigration = 0940;
 					};
 				};
 			};
@@ -146,6 +156,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4D8176252101DA7F00711BD6 /* UIScrollView+PullToRefresh.swift in Sources */,
+				4D8176232101DA3000711BD6 /* PullToRefresh.swift in Sources */,
+				4D8176272101E9D200711BD6 /* PullToRefreshAnimator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -275,6 +288,7 @@
 		4D8175D92101BF4600711BD6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -292,6 +306,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.toprating.Refreshable;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -300,6 +315,7 @@
 		4D8175DA2101BF4600711BD6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
