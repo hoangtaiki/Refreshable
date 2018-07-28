@@ -21,17 +21,12 @@ class ViewController: UITableViewController {
 
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         tableView.register(SampleCell.nib(), forCellReuseIdentifier: SampleCell.reuseIdentifier)
-        tableView.addPullToRefreshWithAction { [weak self] in
-            OperationQueue().addOperation {
-                sleep(2)
-                OperationQueue.main.addOperation {
-                    self?.tableView.stopPullToRefresh()
-                }
-            }
-        }
-        
-    }
 
+        tableView.addLoadMoreWithAction { [weak self] in
+            self?.handleLoadMore()
+        }
+    }
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -47,8 +42,32 @@ class ViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: SampleCell.reuseIdentifier, for: indexPath) as! SampleCell
         cell.isSeperationLineHidden = indexPath.row == numberRows - 1
+        cell.indexNumberLabel.text = indexPath.row.description
 
         return cell
     }
 }
 
+extension ViewController {
+
+    fileprivate func updateLoadMoreEnable() {
+        if numberRows >= 16 {
+            tableView.setLoadMoreEnable(false)
+        }
+    }
+
+    fileprivate func handleLoadMore() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.tableView.beginUpdates()
+            self.numberRows += 3
+            self.tableView.insertRows(at: [IndexPath(row: self.numberRows - 3, section: 0),
+                                           IndexPath(row: self.numberRows - 2, section: 0),
+                                           IndexPath(row: self.numberRows - 1, section: 0)],
+                                      with: .automatic)
+            self.tableView.endUpdates()
+            self.tableView.stopLoadMore()
+
+            self.updateLoadMoreEnable()
+        }
+    }
+}

@@ -22,6 +22,7 @@ class SampleCell: UITableViewCell {
         }
     }
 
+    @IBOutlet weak var indexNumberLabel: UILabel!
     @IBOutlet weak var seperationLine: UIView!
     @IBOutlet weak var secondTitleViewTrailingAnchor: NSLayoutConstraint!
     @IBOutlet weak var thirdTitleViewTrailingAnchor: NSLayoutConstraint!

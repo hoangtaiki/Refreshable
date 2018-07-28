@@ -1,14 +1,14 @@
 //
-//  PullToRefreshAnimator.swift
+//  LoadMoreAnimator.swift
 //  Refreshable
 //
-//  Created by Hoangtaiki on 7/20/18.
+//  Created by Hoangtaiki on 7/25/18.
 //  Copyright © 2018 toprating. All rights reserved.
 //
 
 import UIKit
 
-open class PullToRefreshAnimator: UIView, PullToRefreshDelegate {
+open class LoadMoreAnimator: UIView, LoadMoreDelegate {
 
     open let spinner = UIActivityIndicatorView(activityIndicatorStyle: .gray)
 
@@ -29,25 +29,14 @@ open class PullToRefreshAnimator: UIView, PullToRefreshDelegate {
         spinner.center = CGPoint(x: frame.size.width * 0.5, y: frame.size.height * 0.5)
     }
 
-    open func pullToRefresh(_ view: PullToRefreshView, progressDidChange progress: CGFloat) {
-
-    }
-
-    open func pullToRefresh(_ view: PullToRefreshView, stateDidChange state: PullToRefreshState) {
-        if state == .idle {
-            spinner.isHidden = true
-        } else if state == .pullToRefresh {
-            spinner.isHidden = false
-        }
-    }
-
-    open func pullToRefreshAnimationDidStart(_ view: PullToRefreshView) {
+    public func loadMoreAnimationDidStart(view: LoadMoreView) {
         spinner.isHidden = false
         spinner.startAnimating()
     }
 
-    open func pullToRefreshAnimationDidEnd(_ view: PullToRefreshView) {
+    public func loadMoreAnimationDidEnd(view: LoadMoreView) {
         spinner.isHidden = true
         spinner.stopAnimating()
+
     }
 }

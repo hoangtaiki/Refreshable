@@ -53,20 +53,13 @@ open class PullToRefreshView: UIView {
         bounds.origin.y = 0
         let animator = PullToRefreshAnimator(frame: bounds)
         self.init(frame: frame, animator: animator)
-        self.action = action;
+        self.action = action
         addSubview(animator)
-    }
-
-    convenience init(action: @escaping (() -> ()), frame: CGRect, animator: PullToRefreshDelegate, subview: UIView) {
-        self.init(frame: frame, animator: animator)
-        self.action = action;
-        subview.frame = self.bounds
-        addSubview(subview)
     }
 
     convenience init(action: @escaping (() -> ()), frame: CGRect, animator: PullToRefreshDelegate) {
         self.init(frame: frame, animator: animator)
-        self.action = action;
+        self.action = action
     }
 
     init(frame: CGRect, animator: PullToRefreshDelegate) {
@@ -76,8 +69,7 @@ open class PullToRefreshView: UIView {
     }
 
     public required init?(coder aDecoder: NSCoder) {
-        animator = PullToRefreshAnimator(frame: CGRect.zero)
-        super.init(coder: aDecoder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     open override func willMove(toSuperview newSuperview: UIView!) {

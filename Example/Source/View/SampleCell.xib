@@ -22,9 +22,19 @@
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dJI-Bz-nv2" userLabel="Image View">
                         <rect key="frame" x="16" y="16" width="95.5" height="95.5"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ia4-3I-5Ob">
+                                <rect key="frame" x="42" y="35.5" width="10" height="24"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
                         <color key="backgroundColor" red="0.92143100499999997" green="0.92145264149999995" blue="0.92144101860000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="Ia4-3I-5Ob" firstAttribute="centerY" secondItem="dJI-Bz-nv2" secondAttribute="centerY" id="3VJ-u5-bfI"/>
                             <constraint firstAttribute="width" secondItem="dJI-Bz-nv2" secondAttribute="height" multiplier="1:1" id="BcE-6n-qph"/>
+                            <constraint firstItem="Ia4-3I-5Ob" firstAttribute="centerX" secondItem="dJI-Bz-nv2" secondAttribute="centerX" id="R9j-fc-Oge"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -96,6 +106,7 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="indexNumberLabel" destination="Ia4-3I-5Ob" id="b1a-pB-2Vs"/>
                 <outlet property="secondTitleViewTrailingAnchor" destination="9CO-73-e6n" id="EcU-nZ-3UM"/>
                 <outlet property="seperationLine" destination="LDr-Dj-4hH" id="m1Z-lb-YcA"/>
                 <outlet property="thirdTitleViewTrailingAnchor" destination="bIo-CO-R1P" id="lhx-9e-3LE"/>
