@@ -22,6 +22,10 @@ class ViewController: UITableViewController {
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         tableView.register(SampleCell.nib(), forCellReuseIdentifier: SampleCell.reuseIdentifier)
 
+        tableView.addPullToRefreshWithAction { [weak self] in
+            self?.handleRefresh()
+        }
+
         tableView.addLoadMoreWithAction { [weak self] in
             self?.handleLoadMore()
         }
@@ -50,10 +54,21 @@ class ViewController: UITableViewController {
 
 extension ViewController {
 
-    fileprivate func updateLoadMoreEnable() {
-        if numberRows >= 16 {
-            tableView.setLoadMoreEnable(false)
+    // Reset numberOfRows to original value
+    // Reload data and enable load more
+    fileprivate func handleRefresh() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.numberRows = 10
+            self.tableView.reloadData()
+            self.tableView.stopPullToRefresh()
+            self.tableView.setLoadMoreEnable(true)
         }
+    }
+
+    fileprivate func updateLoadMoreEnable() {
+        if numberRows < 16 { return }
+
+        tableView.setLoadMoreEnable(false)
     }
 
     fileprivate func handleLoadMore() {
@@ -67,6 +82,7 @@ extension ViewController {
             self.tableView.endUpdates()
             self.tableView.stopLoadMore()
 
+            // Check data to enable/disable load more
             self.updateLoadMoreEnable()
         }
     }
