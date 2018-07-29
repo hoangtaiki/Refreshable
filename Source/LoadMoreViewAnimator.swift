@@ -29,12 +29,12 @@ open class LoadMoreAnimator: UIView, LoadMoreDelegate {
         spinner.center = CGPoint(x: frame.size.width * 0.5, y: frame.size.height * 0.5)
     }
 
-    public func loadMoreAnimationDidStart(view: LoadMoreView) {
+    open func loadMoreAnimationDidStart(view: LoadMoreView) {
         spinner.isHidden = false
         spinner.startAnimating()
     }
 
-    public func loadMoreAnimationDidEnd(view: LoadMoreView) {
+    open func loadMoreAnimationDidEnd(view: LoadMoreView) {
         spinner.isHidden = true
         spinner.stopAnimating()
 

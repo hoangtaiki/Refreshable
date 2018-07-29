@@ -26,16 +26,19 @@ public extension UIScrollView {
         }
     }
 
+    // Add pull to refresh view with default animator
     public func addPullToRefreshWithAction(_ action: @escaping (() -> ())) {
         let frame = CGRect(x: 0, y: -pullToRefreshDefaultHeight, width: self.frame.size.width, height: pullToRefreshDefaultHeight)
         pullToRefreshView = PullToRefreshView(action: action, frame: frame)
         addSubview(pullToRefreshView!)
     }
 
+    // Start pull to refresh
     public func startPullToRefresh() {
         pullToRefreshView?.isLoading = true
     }
 
+    // Stop pull to refresh
     public func stopPullToRefresh() {
         pullToRefreshView?.isLoading = false
     }
@@ -56,6 +59,7 @@ public extension UIScrollView {
         }
     }
 
+    // Add load more view with default animator
     public func addLoadMoreWithAction(_ action: @escaping (() -> ())) {
         let frame = CGRect(origin: .zero, size: CGSize(width: self.frame.size.width, height: pullToRefreshDefaultHeight))
         loadMoreView = LoadMoreView(action: action, frame: frame)
@@ -64,14 +68,17 @@ public extension UIScrollView {
         addSubview(loadMoreView!)
     }
 
+    // Start load more
     public func startLoadMore() {
         loadMoreView?.isLoading = true
     }
 
+    // Stop load more
     public func stopLoadMore() {
         loadMoreView?.isLoading = false
     }
 
+    // Set enable/disable for loading more
     public func setLoadMoreEnable(_ enable: Bool) {
         loadMoreView?.isEnabled = enable
     }

@@ -13,7 +13,7 @@ public protocol LoadMoreDelegate {
     func loadMoreAnimationDidEnd(view: LoadMoreView)
 }
 
-open class LoadMoreView: UIView {
+public class LoadMoreView: UIView {
 
     // Default is true. When you set false load more view will be hide
     var isEnabled: Bool = true {
@@ -22,6 +22,16 @@ open class LoadMoreView: UIView {
                 frame = CGRect(x: 0, y: scrollView.contentSize.height, width: frame.size.width, height: height)
             } else {
                 frame = CGRect(x: 0, y: scrollView.contentSize.height, width: frame.size.width, height: 0)
+            }
+        }
+    }
+
+    var isLoading: Bool = false {
+        didSet {
+            if isLoading {
+                startAnimating()
+            } else {
+                stopAnimating()
             }
         }
     }
@@ -35,17 +45,7 @@ open class LoadMoreView: UIView {
     private var animator: LoadMoreDelegate
     private var action: (() -> ()) = {}
 
-    open var isLoading: Bool = false {
-        didSet {
-            if isLoading {
-                startAnimating()
-            } else {
-                stopAnimating()
-            }
-        }
-    }
 
-    //MARK: Object lifecycle methods
     convenience init(action: @escaping (() -> ()), frame: CGRect) {
         var bounds = frame
         bounds.origin.y = 0
@@ -60,7 +60,7 @@ open class LoadMoreView: UIView {
         self.action = action
     }
 
-    init(frame: CGRect, animator: LoadMoreDelegate) {
+    public init(frame: CGRect, animator: LoadMoreDelegate) {
         self.height = frame.height
         self.animator = animator
         super.init(frame: frame)
@@ -71,7 +71,7 @@ open class LoadMoreView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    open override func willMove(toSuperview newSuperview: UIView?) {
+    public override func willMove(toSuperview newSuperview: UIView?) {
         super.willMove(toSuperview: newSuperview)
 
         if newSuperview == nil {
@@ -86,7 +86,40 @@ open class LoadMoreView: UIView {
         }
     }
 
-    fileprivate func addKeyValueObservations() {
+    deinit {
+        removeKeyValueObervation()
+    }
+}
+
+extension LoadMoreView {
+
+    private func startAnimating() {
+        animator.loadMoreAnimationDidStart(view: self)
+
+        let frameHeight = frame.height
+        let contentSizeHeight = scrollView.contentSize.height
+        let scrollViewHeight = scrollView.bounds.height
+        let contentInsetBottom = scrollView.contentInset.bottom
+
+        UIView.animate(withDuration: 0.3, animations: {
+            self.scrollView.contentOffset.y = frameHeight + contentSizeHeight - scrollViewHeight + contentInsetBottom
+            self.scrollView.contentInset.bottom += frameHeight
+        }, completion: { _ in
+            self.action()
+        })
+    }
+
+    private func stopAnimating() {
+        animator.loadMoreAnimationDidEnd(view: self)
+
+        UIView.animate(withDuration: 0.3, animations: {
+            self.scrollView.contentInset.bottom -= self.frame.height
+            self.scrollView.setContentOffset(self.scrollView.contentOffset, animated: false)
+        })
+    }
+
+
+    private func addKeyValueObservations() {
         contentOffsetObservation = scrollView.observe(\.contentOffset) { [weak self] scrollView, _ in
             self?.handleContentOffsetChange()
         }
@@ -96,7 +129,7 @@ open class LoadMoreView: UIView {
         }
     }
 
-    fileprivate func removeKeyValueObervation() {
+    private func removeKeyValueObervation() {
         contentOffsetObservation?.invalidate()
         contentSizeObservation?.invalidate()
 
@@ -115,30 +148,5 @@ open class LoadMoreView: UIView {
 
     private func handleContentSizeChange() {
         frame = CGRect(x: 0, y: scrollView.contentSize.height, width: frame.size.width, height: frame.size.height)
-    }
-
-    func startAnimating() {
-        animator.loadMoreAnimationDidStart(view: self)
-
-        let frameHeight = self.frame.height
-        let contentSizeHeight = self.scrollView.contentSize.height
-        let scrollViewHeight = self.scrollView.bounds.height
-        let contentInsetBottom = self.scrollView.contentInset.bottom
-
-        UIView.animate(withDuration: 0.3, animations: {
-            self.scrollView.contentOffset.y = frameHeight + contentSizeHeight - scrollViewHeight + contentInsetBottom
-            self.scrollView.contentInset.bottom += frameHeight
-        }, completion: { _ in
-            self.action()
-        })
-    }
-
-    func stopAnimating() {
-        animator.loadMoreAnimationDidEnd(view: self)
-
-        UIView.animate(withDuration: 0.3, animations: {
-            self.scrollView.contentInset.bottom -= self.frame.height
-            self.scrollView.setContentOffset(self.scrollView.contentOffset, animated: false)
-        })
     }
 }

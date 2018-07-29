@@ -27,16 +27,9 @@ public protocol PullToRefreshDelegate {
     func pullToRefresh(_ view: PullToRefreshView, stateDidChange state: PullToRefreshState)
 }
 
-open class PullToRefreshView: UIView {
+public class PullToRefreshView: UIView {
 
-    private var observation: NSKeyValueObservation?
-    private var scrollView: UIScrollView!
-    private var originalContentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-    fileprivate var insetTopDelta: CGFloat = 0.0
-
-    private var animator: PullToRefreshDelegate
-    private var action: (() -> ()) = {}
-    internal var isLoading: Bool = false {
+    var isLoading: Bool = false {
         didSet {
             if isLoading != oldValue {
                 if isLoading {
@@ -47,6 +40,15 @@ open class PullToRefreshView: UIView {
             }
         }
     }
+
+    private var observation: NSKeyValueObservation?
+    private var scrollView: UIScrollView!
+    private var originalContentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+    private var insetTopDelta: CGFloat = 0.0
+
+    private var animator: PullToRefreshDelegate
+    private var action: (() -> ()) = {}
+
 
     convenience init(action: @escaping (() -> ()), frame: CGRect) {
         var bounds = frame
@@ -62,7 +64,7 @@ open class PullToRefreshView: UIView {
         self.action = action
     }
 
-    init(frame: CGRect, animator: PullToRefreshDelegate) {
+    public init(frame: CGRect, animator: PullToRefreshDelegate) {
         self.animator = animator
         super.init(frame: frame)
         self.autoresizingMask = .flexibleWidth
@@ -72,7 +74,7 @@ open class PullToRefreshView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    open override func willMove(toSuperview newSuperview: UIView!) {
+    public override func willMove(toSuperview newSuperview: UIView!) {
         super.willMove(toSuperview: newSuperview)
 
         guard newSuperview is UIScrollView else { return }
@@ -86,6 +88,13 @@ open class PullToRefreshView: UIView {
             self.handleScrollViewOffsetChange()
         }
     }
+
+    deinit {
+        observation?.invalidate()
+    }
+}
+
+extension PullToRefreshView {
 
     private func handleScrollViewOffsetChange() {
 
@@ -169,9 +178,5 @@ open class PullToRefreshView: UIView {
             oldInset.top = oldInset.top + self.insetTopDelta
             self.scrollView.contentInset = oldInset
         })
-    }
-
-    deinit{
-        observation?.invalidate()
     }
 }
