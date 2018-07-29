@@ -29,10 +29,6 @@ open class PullToRefreshAnimator: UIView, PullToRefreshDelegate {
         spinner.center = CGPoint(x: frame.size.width * 0.5, y: frame.size.height * 0.5)
     }
 
-    open func pullToRefresh(_ view: PullToRefreshView, progressDidChange progress: CGFloat) {
-
-    }
-
     open func pullToRefresh(_ view: PullToRefreshView, stateDidChange state: PullToRefreshState) {
         if state == .idle {
             spinner.isHidden = true

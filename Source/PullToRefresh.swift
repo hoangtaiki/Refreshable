@@ -59,12 +59,14 @@ public class PullToRefreshView: UIView {
         addSubview(animator)
     }
 
-    convenience init(action: @escaping (() -> ()), frame: CGRect, animator: PullToRefreshDelegate) {
+    convenience init(action: @escaping (() -> ()), frame: CGRect, animator: PullToRefreshDelegate & UIView) {
         self.init(frame: frame, animator: animator)
         self.action = action
+        animator.frame = bounds
+        addSubview(animator)
     }
 
-    public init(frame: CGRect, animator: PullToRefreshDelegate) {
+    public init(frame: CGRect, animator: PullToRefreshDelegate & UIView) {
         self.animator = animator
         super.init(frame: frame)
         self.autoresizingMask = .flexibleWidth
@@ -171,12 +173,12 @@ extension PullToRefreshView {
     }
 
     private func stopAnimating() {
-        animator.pullToRefreshAnimationDidEnd(self)
-
         UIView.animate(withDuration: 0.3, animations: {
             var oldInset = self.scrollView.contentInset
             oldInset.top = oldInset.top + self.insetTopDelta
             self.scrollView.contentInset = oldInset
+        }, completion: { finished in
+            self.animator.pullToRefreshAnimationDidEnd(self)
         })
     }
 }
