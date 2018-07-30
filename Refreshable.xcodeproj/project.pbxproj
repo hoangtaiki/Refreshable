@@ -21,6 +21,7 @@
 
 /* Begin PBXFileReference section */
 		4D7192B62108362E00BC8876 /* LoadMoreViewAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadMoreViewAnimator.swift; sourceTree = "<group>"; };
+		4D7192F1210EC0F500BC8876 /* Package.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = SOURCE_ROOT; };
 		4D8175D02101BF4600711BD6 /* Refreshable.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Refreshable.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D8175DD2101C6E400711BD6 /* Refreshable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Refreshable.h; sourceTree = "<group>"; };
 		4D8175E12101C73B00711BD6 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -80,6 +81,7 @@
 		4D8175E42101C78400711BD6 /* Deployment */ = {
 			isa = PBXGroup;
 			children = (
+				4D7192F1210EC0F500BC8876 /* Package.swift */,
 				4DD0D2312108161900C68FB1 /* LICENSE */,
 				4DD0D2302108161800C68FB1 /* Refreshable.podspec */,
 			);
