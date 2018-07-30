@@ -11,7 +11,6 @@ Pod::Spec.new do |s|
   s.platform = :ios, "10.0"
 
   s.source_files = 'Source/**/*.swift'
-  s.resource_bundles = {'Refreshable' => ['Source/Resources/**/*.{png,xcassets,xib}']}
 
   s.ios.frameworks = 'UIKit', 'Foundation'
 
