@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'Refreshable'
-  s.version = '0.0.1'
+  s.version = '1.0.0'
   s.license = 'MIT'
   s.summary = 'Pull to refresh and load more function for UIScrollView'
   s.homepage = 'https://github.com/hoangtaiki/Refreshable'
@@ -11,7 +11,6 @@ Pod::Spec.new do |s|
   s.platform = :ios, "10.0"
 
   s.source_files = 'Source/**/*.swift'
-  s.resource_bundles = {'Refreshable' => ['Source/Resources/**/*.{png,xcassets,xib}']}
 
   s.ios.frameworks = 'UIKit', 'Foundation'
 
