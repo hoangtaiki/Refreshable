@@ -1,4 +1,9 @@
 # Refreshable
+[![Version](https://img.shields.io/cocoapods/v/Refreshable.svg?style=flat)](http://cocoapods.org/pods/Refreshable)
+[![License](https://img.shields.io/cocoapods/l/Refreshable.svg?style=flat)](http://cocoapods.org/pods/Refreshable)
+[![Platform](https://img.shields.io/cocoapods/p/Refreshable.svg?style=flat)](http://cocoapods.org/pods/Refreshable)
+![Language](https://img.shields.io/badge/Language-%20swift%20%20-blue.svg)
+[![Build Status](https://travis-ci.org/hoangtaiki/Refreshable.svg)](https://travis-ci.org/hoangtaiki/Refreshable)
 
 Refreshable is a component that give pull to refresh and load more (infinite scrolling) feature for UIScrollView. By extension to UIScrollView, you can easily add features for any subclass of UIScrollView. Refreshable is developed to you can easily customize its UI style.
 
