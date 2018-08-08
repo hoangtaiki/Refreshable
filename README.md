@@ -75,6 +75,39 @@ We support disable `load more` when no more data
 tableView.setLoadMoreEnable(false)
 ```
 
+### Use with RxSwift
+I am a fan of reactive programming. I use RxSwift for my projects. If you want use `Refreshable` with RxSwift. Create new file with name `Refreshable+Rx.swift` then copy below code into that file.
+
+```swift
+import RxSwift
+import RxCocoa
+import Refreshable
+
+extension Reactive where Base: UIScrollView {
+    
+    public var refreshing: Binder<Bool> {
+        return Binder(base) { scrollView, isShow in
+            if isShow {
+            	scrollView.startPullToRefresh()
+            } else {
+                scrollView.stopPullToRefresh()
+            }
+        }
+    }
+    
+    public var loadingMore: Binder<Bool> {
+        return Binder(base) { scrollView, isShow in
+            if isShow {
+            	scrollView.startLoadMore()
+            } else {
+                scrollView.stopLoadMore()
+            }
+        }
+    }
+
+}
+```
+
 ## Contributing
 
 We’re glad you’re interested in Refreshable, and we’d love to see where you take it. If you have suggestions or bug reports, feel free to send pull request or create new issue.
