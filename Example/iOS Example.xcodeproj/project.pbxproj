@@ -107,9 +107,7 @@
 			isa = PBXGroup;
 			children = (
 				4D7192EB210E1BB400BC8876 /* Extensions */,
-				4D81762B2101FE2F00711BD6 /* Model */,
 				4D81762A2101FE2900711BD6 /* Controller */,
-				4D8176292101FE2300711BD6 /* ViewModel */,
 				4D8176282101FDF000711BD6 /* View */,
 				4D81760E2101C9A500711BD6 /* AppDelegate.swift */,
 			);
@@ -126,13 +124,6 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		4D8176292101FE2300711BD6 /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
 		4D81762A2101FE2900711BD6 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
@@ -140,13 +131,6 @@
 				4D7192E7210E17DB00BC8876 /* ListViewController.swift */,
 			);
 			path = Controller;
-			sourceTree = "<group>";
-		};
-		4D81762B2101FE2F00711BD6 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		4D8CA0E42102EA64005D0875 /* Frameworks */ = {
