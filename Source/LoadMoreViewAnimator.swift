@@ -14,6 +14,7 @@ open class LoadMoreAnimator: UIView, LoadMoreDelegate {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        autoresizingMask = .flexibleWidth
 
         addSubview(spinner)
         spinner.isHidden = true

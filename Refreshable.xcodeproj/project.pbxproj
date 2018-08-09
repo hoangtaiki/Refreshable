@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4D6138DF211C1D8500ACB492 /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = 4D6138DD211C1D8400ACB492 /* CHANGELOG.md */; };
+		4D6138E0211C1D8500ACB492 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 4D6138DE211C1D8400ACB492 /* README.md */; };
 		4D7192B72108362E00BC8876 /* LoadMoreViewAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7192B62108362E00BC8876 /* LoadMoreViewAnimator.swift */; };
 		4D8175DF2101C6E400711BD6 /* Refreshable.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D8175DD2101C6E400711BD6 /* Refreshable.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4D8176232101DA3000711BD6 /* PullToRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8176222101DA3000711BD6 /* PullToRefresh.swift */; };
@@ -14,12 +16,12 @@
 		4D8176272101E9D200711BD6 /* PullToRefreshAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8176262101E9D200711BD6 /* PullToRefreshAnimator.swift */; };
 		4DD0D2322108161900C68FB1 /* Refreshable.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 4DD0D2302108161800C68FB1 /* Refreshable.podspec */; };
 		4DD0D2332108161900C68FB1 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 4DD0D2312108161900C68FB1 /* LICENSE */; };
-		4DD0D2362108162200C68FB1 /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = 4DD0D2342108162200C68FB1 /* CHANGELOG.md */; };
-		4DD0D2372108162200C68FB1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 4DD0D2352108162200C68FB1 /* README.md */; };
 		4DD0D2392108165800C68FB1 /* LoadMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD0D2382108165800C68FB1 /* LoadMore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4D6138DD211C1D8400ACB492 /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = SOURCE_ROOT; };
+		4D6138DE211C1D8400ACB492 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		4D7192B62108362E00BC8876 /* LoadMoreViewAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadMoreViewAnimator.swift; sourceTree = "<group>"; };
 		4D7192F1210EC0F500BC8876 /* Package.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = SOURCE_ROOT; };
 		4D8175D02101BF4600711BD6 /* Refreshable.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Refreshable.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -30,8 +32,6 @@
 		4D8176262101E9D200711BD6 /* PullToRefreshAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PullToRefreshAnimator.swift; sourceTree = "<group>"; };
 		4DD0D2302108161800C68FB1 /* Refreshable.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Refreshable.podspec; sourceTree = SOURCE_ROOT; };
 		4DD0D2312108161900C68FB1 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = SOURCE_ROOT; };
-		4DD0D2342108162200C68FB1 /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = SOURCE_ROOT; };
-		4DD0D2352108162200C68FB1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		4DD0D2382108165800C68FB1 /* LoadMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadMore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -46,11 +46,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4D6138DC211C1D6F00ACB492 /* Document */ = {
+			isa = PBXGroup;
+			children = (
+				4D6138DD211C1D8400ACB492 /* CHANGELOG.md */,
+				4D6138DE211C1D8400ACB492 /* README.md */,
+			);
+			path = Document;
+			sourceTree = "<group>";
+		};
 		4D8175C62101BF4600711BD6 = {
 			isa = PBXGroup;
 			children = (
 				4D8175E42101C78400711BD6 /* Deployment */,
-				4D8175E52101C78400711BD6 /* Document */,
+				4D6138DC211C1D6F00ACB492 /* Document */,
 				4D8175D12101BF4600711BD6 /* Products */,
 				4D8175DC2101C6E400711BD6 /* Source */,
 			);
@@ -86,15 +95,6 @@
 				4DD0D2302108161800C68FB1 /* Refreshable.podspec */,
 			);
 			path = Deployment;
-			sourceTree = "<group>";
-		};
-		4D8175E52101C78400711BD6 /* Document */ = {
-			isa = PBXGroup;
-			children = (
-				4DD0D2342108162200C68FB1 /* CHANGELOG.md */,
-				4DD0D2352108162200C68FB1 /* README.md */,
-			);
-			path = Document;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -167,8 +167,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4DD0D2332108161900C68FB1 /* LICENSE in Resources */,
-				4DD0D2362108162200C68FB1 /* CHANGELOG.md in Resources */,
-				4DD0D2372108162200C68FB1 /* README.md in Resources */,
+				4D6138DF211C1D8500ACB492 /* CHANGELOG.md in Resources */,
+				4D6138E0211C1D8500ACB492 /* README.md in Resources */,
 				4DD0D2322108161900C68FB1 /* Refreshable.podspec in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'Refreshable'
-  s.version = '1.1.0'
+  s.version = '1.1.1'
   s.license = 'MIT'
   s.summary = 'Pull to refresh and load more function for UIScrollView'
   s.homepage = 'https://github.com/hoangtaiki/Refreshable'
