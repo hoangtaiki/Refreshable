@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'Refreshable'
-  s.version = '1.1.1'
+  s.version = '1.1.2'
   s.license = 'MIT'
   s.summary = 'Pull to refresh and load more function for UIScrollView'
   s.homepage = 'https://github.com/hoangtaiki/Refreshable'
@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.source = { :git => 'https://github.com/hoangtaiki/Refreshable.git', :tag => s.version }
 
   s.requires_arc = true
-  s.platform = :ios, "10.0"
+  s.platform = :ios, "9.0"
 
   s.source_files = 'Source/**/*.swift'
 
