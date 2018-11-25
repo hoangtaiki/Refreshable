@@ -14,7 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    private func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
 
         let appearance = UINavigationBar.appearance()
@@ -22,8 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         appearance.isTranslucent = false
         appearance.tintColor = .white
         appearance.barTintColor = UIColor(red: 82/255, green: 100/255, blue: 176/255, alpha: 0.96)
-        appearance.titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.white,
-                                          NSAttributedStringKey.font: UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.medium)  ]
+        appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white,
+                                          NSAttributedString.Key.font: UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.medium)  ]
 
         return true
     }
