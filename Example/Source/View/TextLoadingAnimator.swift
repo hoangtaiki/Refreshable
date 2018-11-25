@@ -11,7 +11,7 @@ import Refreshable
 
 class TextLoadingAnimator: UIView, PullToRefreshDelegate {
 
-    let spinner = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+    let spinner = UIActivityIndicatorView(style: .gray)
 
     let titleLabel: UILabel = {
         let label = UILabel.init(frame: CGRect.zero)

@@ -163,7 +163,7 @@ extension PullToRefreshView {
         if #available(iOS 11.0, *) {
             contentOffset.y = -scrollView.adjustedContentInset.top - frameHeight
         }
-        UIView.animate(withDuration: 0.3, delay: 0, options: UIViewAnimationOptions(), animations: {
+        UIView.animate(withDuration: 0.3, delay: 0, options: UIView.AnimationOptions(), animations: {
             self.scrollView.contentInset = UIEdgeInsets(top: frameHeight + contentInset.top, left: 0, bottom: 0, right: 0)
             self.scrollView.contentOffset = contentOffset
         }, completion: { finished in
