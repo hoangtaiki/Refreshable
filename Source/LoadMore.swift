@@ -15,7 +15,7 @@ public protocol LoadMoreDelegate {
 
 public class LoadMoreView: UIView {
 
-    // Default is true. When you set false load more view will be hide
+    // Default is true. When you set to false load more view will be hidden
     var isEnabled: Bool = true {
         didSet {
             if isEnabled {
