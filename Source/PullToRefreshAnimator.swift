@@ -31,25 +31,20 @@ open class PullToRefreshAnimator: UIView, PullToRefreshDelegate {
     }
 
     open func pullToRefresh(_ view: PullToRefreshView, stateDidChange state: PullToRefreshState) {
+        print("pullToRefresh state:\(state)")
         switch state {
         case .idle:
+            spinner.stopAnimating()
             spinner.isHidden = true
-            spinner.stopAnimating()
         case .pulling:
-            spinner.isHidden = false
             spinner.stopAnimating()
+            spinner.isHidden = false
         case .releaseToLoad:
-            spinner.isHidden = false
             spinner.stopAnimating()
+            spinner.isHidden = false
         case .loading:
             spinner.isHidden = false
             spinner.startAnimating()
-        }
-
-        if state == .idle {
-            spinner.isHidden = true
-        } else if state == .pulling {
-            spinner.isHidden = false
         }
     }
 }
