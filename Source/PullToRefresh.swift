@@ -128,8 +128,12 @@ extension PullToRefreshView {
 
         originalContentInsets = scrollView.contentInset
 
-        // If not in pulled down state, simply return
-        guard scrollView.contentOffset.y <= -adjustedContentInset.top else { return }
+        // If not in pulled down state, reset to idle state & return
+        guard scrollView.contentOffset.y <= -adjustedContentInset.top else {
+            isLoading = false
+            state = .idle
+            return
+        }
 
         // When scrollView's offset returns to the original content offset, change the state back to idle
         if scrollView.contentOffset.y == -adjustedContentInset.top {
