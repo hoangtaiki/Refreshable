@@ -36,6 +36,10 @@ public extension UIScrollView {
         self.pullToRefreshView = pullToRefreshView
     }
 
+    public func removePullToRefresh() {
+        pullToRefreshView = nil
+    }
+
     public func startPullToRefresh() {
         pullToRefreshView?.isLoading = true
     }
@@ -66,10 +70,16 @@ public extension UIScrollView {
     {
         let size = CGSize(width: self.frame.size.width, height: height)
         let frame = CGRect(origin: .zero, size: size)
-        loadMoreView = LoadMoreView(frame: frame, contentView: contentView, loadingBlock: loadingBlock)
-        loadMoreView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        let loadMoreView = LoadMoreView(frame: frame, contentView: contentView, loadingBlock: loadingBlock)
+        loadMoreView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
-        addSubview(loadMoreView!)
+        addSubview(loadMoreView)
+
+        self.loadMoreView = loadMoreView
+    }
+
+    public func removeLoadMore() {
+        loadMoreView = nil
     }
 
     // Start load more
