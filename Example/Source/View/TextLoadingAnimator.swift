@@ -52,16 +52,18 @@ class TextLoadingAnimator: UIView, PullToRefreshDelegate {
             spinner.isHidden = true
             titleLabel.isHidden = true
         case .pulling:
+            spinner.stopAnimating()
             spinner.isHidden = false
             titleLabel.isHidden = false
             titleLabel.text = "Pulling"
         case .releaseToLoad:
+            spinner.stopAnimating()
+            spinner.isHidden = false
             titleLabel.text = "Release to start refresh"
         case .loading:
             titleLabel.text = "Loading..."
+            spinner.isHidden = false
             spinner.startAnimating()
         }
-
-        self.setNeedsLayout()
     }
 }
