@@ -8,16 +8,30 @@
 
 import UIKit
 
-public protocol LoadMoreDelegate {
-    func loadMoreAnimationDidStart(view: LoadMoreView)
-    func loadMoreAnimationDidEnd(view: LoadMoreView)
+public protocol LoadMoreDelegate: class {
+    func loadMoreDidStart(view: LoadMoreView)
+    func loadMoreDidEnd(view: LoadMoreView)
 }
 
 public class LoadMoreView: UIView {
 
-    // Default is true. When you set to false load more view will be hidden
+    private let height: CGFloat
+
+    private weak var scrollView: UIScrollView?
+
+    private var contentOffsetObservation: NSKeyValueObservation?
+    private var contentSizeObservation: NSKeyValueObservation?
+    private var panStateObservation: NSKeyValueObservation?
+
+    private weak var delegate: LoadMoreDelegate?
+
+    private var loadingBlock: (() -> ())?
+
+    // Default is true. When you set false load more view will be hide
     var isEnabled: Bool = true {
         didSet {
+            guard let scrollView = scrollView else { return }
+
             if isEnabled {
                 frame = CGRect(x: 0, y: scrollView.contentSize.height, width: frame.size.width, height: height)
             } else {
@@ -29,57 +43,42 @@ public class LoadMoreView: UIView {
     var isLoading: Bool = false {
         didSet {
             if isLoading {
-                startAnimating()
+                startLoading()
             } else {
-                stopAnimating()
+                stopLoading()
             }
         }
     }
 
-    private var height: CGFloat
-    private var scrollView: UIScrollView!
-    private var contentOffsetObservation: NSKeyValueObservation?
-    private var contentSizeObservation: NSKeyValueObservation?
-    private var panStateObservation: NSKeyValueObservation?
-
-    private var animator: LoadMoreDelegate
-    private var action: (() -> ()) = {}
-
-
-    convenience init(action: @escaping (() -> ()), frame: CGRect) {
-        var bounds = frame
-        bounds.origin.y = 0
-        let animator = LoadMoreAnimator(frame: bounds)
-        self.init(frame: frame, animator: animator)
-        self.action = action
-        addSubview(animator)
-    }
-
-    convenience init(action: @escaping (() -> ()), frame: CGRect, animator: LoadMoreDelegate) {
-        self.init(frame: frame, animator: animator)
-        self.action = action
-    }
-
-    public init(frame: CGRect, animator: LoadMoreDelegate) {
+    public init(frame: CGRect,
+                contentView: (LoadMoreDelegate & UIView)? = nil,
+                loadingBlock: (() -> ())?)
+    {
         self.height = frame.height
-        self.animator = animator
+
         super.init(frame: frame)
         self.autoresizingMask = .flexibleWidth
+
+        let contentView = contentView ?? LoadMoreAnimator(frame: bounds)
+        contentView.frame = bounds
+        addSubview(contentView)
+
+        self.delegate = contentView
+        self.loadingBlock = loadingBlock
     }
 
-    public required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    public required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     public override func willMove(toSuperview newSuperview: UIView?) {
         super.willMove(toSuperview: newSuperview)
 
         if newSuperview == nil {
             removeKeyValueObervation()
-        } else {
-            guard newSuperview is UIScrollView else { return }
 
-            scrollView = newSuperview as? UIScrollView
+        } else {
+            guard let scrollView = newSuperview as? UIScrollView else { return }
+            self.scrollView = scrollView
+
             scrollView.alwaysBounceVertical = true
 
             addKeyValueObservations()
@@ -93,33 +92,42 @@ public class LoadMoreView: UIView {
 
 extension LoadMoreView {
 
-    private func startAnimating() {
-        animator.loadMoreAnimationDidStart(view: self)
+    private func startLoading() {
+        guard let scrollView = scrollView else { return }
+
+        delegate?.loadMoreDidStart(view: self)
 
         let frameHeight = frame.height
         let contentSizeHeight = scrollView.contentSize.height
         let scrollViewHeight = scrollView.bounds.height
         let contentInsetBottom = scrollView.contentInset.bottom
 
-        UIView.animate(withDuration: 0.3, animations: {
-            self.scrollView.contentOffset.y = frameHeight + contentSizeHeight - scrollViewHeight + contentInsetBottom
-            self.scrollView.contentInset.bottom += frameHeight
+        UIView.animate(
+            withDuration: 0.3,
+            animations: {
+                scrollView.contentOffset.y = frameHeight + contentSizeHeight - scrollViewHeight + contentInsetBottom
+                scrollView.contentInset.bottom += frameHeight
+
         }, completion: { _ in
-            self.action()
+            self.loadingBlock?()
         })
     }
 
-    private func stopAnimating() {
-        animator.loadMoreAnimationDidEnd(view: self)
+    private func stopLoading() {
+        guard let scrollView = scrollView else { return }
+
+        delegate?.loadMoreDidEnd(view: self)
 
         UIView.animate(withDuration: 0.3, animations: {
-            self.scrollView.contentInset.bottom -= self.frame.height
-            self.scrollView.setContentOffset(self.scrollView.contentOffset, animated: false)
+            scrollView.contentInset.bottom -= self.frame.height
+            scrollView.setContentOffset(scrollView.contentOffset, animated: false)
         })
     }
 
 
     private func addKeyValueObservations() {
+        guard let scrollView = scrollView else { return }
+
         contentOffsetObservation = scrollView.observe(\.contentOffset) { [weak self] scrollView, _ in
             self?.handleContentOffsetChange()
         }
@@ -138,6 +146,8 @@ extension LoadMoreView {
     }
 
     private func handleContentOffsetChange() {
+        guard let scrollView = scrollView else { return }
+
         if isLoading || !isEnabled { return }
 
         if scrollView.contentSize.height <= scrollView.bounds.height { return }
@@ -147,6 +157,8 @@ extension LoadMoreView {
     }
 
     private func handleContentSizeChange() {
+        guard let scrollView = scrollView else { return }
+
         frame = CGRect(x: 0, y: scrollView.contentSize.height, width: frame.size.width, height: frame.size.height)
     }
 }
