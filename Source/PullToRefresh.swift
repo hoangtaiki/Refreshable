@@ -43,18 +43,37 @@ public class PullToRefreshView: UIView {
     private var loadingBlock: (() -> ())?
 
     private var originalContentInsets: UIEdgeInsets = .zero
-    private var insetTopDelta: CGFloat = 0
 
-    var isLoading: Bool = false {
-        didSet {
-            if isLoading {
-                startLoading()
-            } else {
-                stopLoading()
-            }
+    // MARK: Public
+
+    public func startLoading() {
+        guard let scrollView = scrollView else { return }
+        guard state != .loading else { return }
+
+        state = .loading
+
+        UIView.animate(withDuration: 0.3, animations: {
+            scrollView.contentInset.top = self.originalContentInsets.top + self.frame.size.height
+
+        }, completion: { _ in
+            // Call loadingBlock after animation in case it's UI blocking which could cause jittering
+            self.loadingBlock?()
+        })
+    }
+
+    public func stopLoading() {
+        guard let scrollView = scrollView else { return }
+        guard state == .loading else { return }
+
+        self.state = .idle
+
+        UIView.animate(withDuration: 0.3) {
+            scrollView.contentInset = self.originalContentInsets
         }
     }
 
+    // MARK: Lifecycle
+    
     public init(frame: CGRect,
                 contentView: (PullToRefreshDelegate & UIView)? = nil,
                 loadingBlock: (() -> ())? = nil)
@@ -91,112 +110,47 @@ public class PullToRefreshView: UIView {
     deinit {
         observation?.invalidate()
     }
-}
-
-extension PullToRefreshView {
 
     private func handleScrollViewOffsetChange() {
         guard let scrollView = scrollView else { return }
 
-        // If already in loading state, there are 2 cases when offset would change:
-        // 1. Loading finished - the scrollView is scrolling back to its original content inset
-        // 2. User scrolls up - in this case we updates scrollView's inset to its original value
-        if isLoading {
-            let contentOffset = scrollView.contentOffset
-            var oldInset = scrollView.contentInset
-            var insetTop = originalContentInsets.top
-
-            if -contentOffset.y > originalContentInsets.top {
-                insetTop = -contentOffset.y
+        if state == .loading {
+            // If in loading state and scrolled more than the intended, set contentInset to originalInset + frame.height
+            if scrollView.contentOffset.y < -originalContentInsets.top - frame.size.height {
+                scrollView.contentInset.top = originalContentInsets.top + frame.size.height
             }
-
-            if insetTop > frame.size.height + originalContentInsets.top {
-                insetTop = frame.size.height + originalContentInsets.top
-            }
-            oldInset.top = insetTop
-
-            scrollView.contentInset = oldInset
-            insetTopDelta = originalContentInsets.top - insetTop
-
             return
         }
 
-        var adjustedContentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        var adjustedContentInset: UIEdgeInsets = .zero
         if #available(iOS 11.0, *) {
             adjustedContentInset = scrollView.adjustedContentInset
+            print("adjustedContentInset:\(adjustedContentInset)")
         }
 
-        originalContentInsets = scrollView.contentInset
-
-        // If not in pulled down state, reset to idle state & return
-        guard scrollView.contentOffset.y <= -adjustedContentInset.top else {
-            isLoading = false
+        // If not in pulled down state, reset to idle & return
+        guard scrollView.contentOffset.y < -adjustedContentInset.top else {
             state = .idle
             return
         }
 
-        // When scrollView's offset returns to the original content offset, change the state back to idle
-        if scrollView.contentOffset.y == -adjustedContentInset.top {
-            state = .idle
+        // In pulled down state
+        let diff = abs(scrollView.contentOffset.y) - adjustedContentInset.top
 
-            // In pulled down state
+        // If the diff is smaller than the refresh view frame, the state is pulling
+        if diff <= frame.size.height {
+            state = .pulling
+
+            // If the diff passed the view frame threshold
         } else {
-            let diff = abs(scrollView.contentOffset.y) - adjustedContentInset.top
+            // If still dragging , change the state to release to load
+            if scrollView.isDragging {
+                state = .releaseToLoad
 
-            // If the diff is smaller than the refresh view frame, the state is pulling
-            if diff <= frame.size.height {
-                state = .pulling
-
-                // If the diff passed the view frame threshold
+                // If not dragging anymore, change the state to loading
             } else {
-                // If still dragging , change the state to release to load
-                if scrollView.isDragging {
-                    state = .releaseToLoad
-
-                    // If not dragging anymore, change the state to loading
-                } else {
-                    isLoading = true
-                }
+                startLoading()
             }
         }
-    }
-
-    private func startLoading() {
-        guard let scrollView = scrollView else { return }
-
-        let frameHeight = frame.size.height
-        let contentInset = scrollView.contentInset
-        var contentOffset = CGPoint(x: 0, y: -frameHeight)
-        if #available(iOS 11.0, *) {
-            contentOffset.y = -scrollView.adjustedContentInset.top - frameHeight
-        }
-        UIView.animate(
-            withDuration: 0.3,
-            animations: {
-                scrollView.contentInset = UIEdgeInsets(top: frameHeight + contentInset.top,
-                                                       left: 0,
-                                                       bottom: 0,
-                                                       right: 0)
-                scrollView.contentOffset = contentOffset
-
-        }, completion: { _ in
-            self.state = .loading
-            self.loadingBlock?()
-        })
-    }
-
-    private func stopLoading() {
-        guard let scrollView = scrollView else { return }
-
-        UIView.animate(
-            withDuration: 0.3,
-            animations: {
-                var oldInset = scrollView.contentInset
-                oldInset.top = oldInset.top + self.insetTopDelta
-                scrollView.contentInset = oldInset
-
-        }, completion: { _ in
-            self.state = .idle
-        })
     }
 }
