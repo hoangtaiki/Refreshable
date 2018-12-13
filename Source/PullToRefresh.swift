@@ -125,7 +125,6 @@ public class PullToRefreshView: UIView {
         var adjustedContentInset: UIEdgeInsets = .zero
         if #available(iOS 11.0, *) {
             adjustedContentInset = scrollView.adjustedContentInset
-            print("adjustedContentInset:\(adjustedContentInset)")
         }
 
         // If not in pulled down state, reset to idle & return
