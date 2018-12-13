@@ -37,18 +37,18 @@ public extension UIScrollView {
     }
 
     public func removePullToRefresh() {
+        pullToRefreshView?.removeFromSuperview()
         pullToRefreshView = nil
     }
 
     public func startPullToRefresh() {
-        pullToRefreshView?.isLoading = true
+        pullToRefreshView?.startLoading()
     }
 
     public func stopPullToRefresh() {
-        pullToRefreshView?.isLoading = false
+        pullToRefreshView?.stopLoading()
     }
 }
-
 
 /// Infinity Scrolling
 public extension UIScrollView {
