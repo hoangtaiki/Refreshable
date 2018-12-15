@@ -31,7 +31,6 @@ open class PullToRefreshAnimator: UIView, PullToRefreshDelegate {
     }
 
     open func pullToRefresh(_ view: PullToRefreshView, stateDidChange state: PullToRefreshState) {
-        print("pullToRefresh state:\(state)")
         switch state {
         case .idle:
             spinner.stopAnimating()
