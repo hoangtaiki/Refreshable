@@ -46,40 +46,24 @@ class TextLoadingAnimator: UIView, PullToRefreshDelegate {
     }
 
     func pullToRefresh(_ view: PullToRefreshView, stateDidChange state: PullToRefreshState) {
-        if state == .idle {
+        switch state {
+        case .idle:
+            spinner.stopAnimating()
             spinner.isHidden = true
             titleLabel.isHidden = true
-        } else if state == .pullToRefresh {
+        case .pulling:
+            spinner.stopAnimating()
             spinner.isHidden = false
             titleLabel.isHidden = false
-        }
-
-        // Update text for title lable
-        switch state {
-        case .pullToRefresh:
             titleLabel.text = "Pulling"
-        case .releaseToRefresh:
+        case .releaseToLoad:
+            spinner.stopAnimating()
+            spinner.isHidden = false
             titleLabel.text = "Release to start refresh"
         case .loading:
             titleLabel.text = "Loading..."
-        default: break
+            spinner.isHidden = false
+            spinner.startAnimating()
         }
-
-        self.setNeedsLayout()
     }
-
-    func pullToRefreshAnimationDidStart(_ view: PullToRefreshView) {
-        spinner.isHidden = false
-        spinner.startAnimating()
-
-        titleLabel.isHidden = false
-    }
-
-    func pullToRefreshAnimationDidEnd(_ view: PullToRefreshView) {
-        spinner.isHidden = true
-        spinner.stopAnimating()
-
-        titleLabel.isHidden = true
-    }
-
 }

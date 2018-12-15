@@ -9,9 +9,7 @@
 import UIKit
 
 private var pullToRefreshKey: UInt8 = 0
-public let pullToRefreshDefaultHeight: CGFloat = 50
 private var loadMoreKey: UInt8 = 1
-public let loadMoreDefaultHeight: CGFloat = 50
 
 /// Pull To Refresh
 public extension UIScrollView {
@@ -26,36 +24,31 @@ public extension UIScrollView {
         }
     }
 
-    // Add pull to refresh view with default animator
-    public func addPullToRefresh(action: @escaping (() -> ())) {
-        let origin = CGPoint(x: 0, y: -pullToRefreshDefaultHeight)
-        let size = CGSize(width: self.frame.size.width, height: pullToRefreshDefaultHeight)
-        let frame = CGRect(origin: origin, size: size)
-        pullToRefreshView = PullToRefreshView(action: action, frame: frame)
-
-        addSubview(pullToRefreshView!)
-    }
-
-    public func addPullToRefresh(withAnimator animator: PullToRefreshDelegate & UIView,
-                                 height: CGFloat = pullToRefreshDefaultHeight,
-                                 action: @escaping (() -> ())) {
+    public func addPullToRefresh(height: CGFloat = 50,
+                                 contentView: (PullToRefreshDelegate & UIView)? = nil,
+                                 loadingBlock: @escaping (() -> ()))
+    {
         let frame = CGRect(x: 0, y: -height, width: self.frame.size.width, height: height)
-        pullToRefreshView = PullToRefreshView(action: action, frame: frame, animator: animator)
+        let pullToRefreshView = PullToRefreshView(frame: frame, contentView: contentView, loadingBlock: loadingBlock)
 
-        addSubview(pullToRefreshView!)
+        addSubview(pullToRefreshView)
+
+        self.pullToRefreshView = pullToRefreshView
     }
 
-    // Start pull to refresh
+    public func removePullToRefresh() {
+        pullToRefreshView?.removeFromSuperview()
+        pullToRefreshView = nil
+    }
+
     public func startPullToRefresh() {
-        pullToRefreshView?.isLoading = true
+        pullToRefreshView?.startLoading()
     }
 
-    // Stop pull to refresh
     public func stopPullToRefresh() {
-        pullToRefreshView?.isLoading = false
+        pullToRefreshView?.stopLoading()
     }
 }
-
 
 /// Infinity Scrolling
 public extension UIScrollView {
@@ -71,13 +64,22 @@ public extension UIScrollView {
     }
 
     // Add load more view with default animator
-    public func addLoadMore(action: @escaping (() -> ())) {
-        let size = CGSize(width: self.frame.size.width, height: loadMoreDefaultHeight)
+    public func addLoadMore(height: CGFloat = 50,
+                            contentView: (LoadMoreDelegate & UIView)? = nil,
+                            loadingBlock: @escaping (() -> ()))
+    {
+        let size = CGSize(width: self.frame.size.width, height: height)
         let frame = CGRect(origin: .zero, size: size)
-        loadMoreView = LoadMoreView(action: action, frame: frame)
-        loadMoreView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        let loadMoreView = LoadMoreView(frame: frame, contentView: contentView, loadingBlock: loadingBlock)
+        loadMoreView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
-        addSubview(loadMoreView!)
+        addSubview(loadMoreView)
+
+        self.loadMoreView = loadMoreView
+    }
+
+    public func removeLoadMore() {
+        loadMoreView = nil
     }
 
     // Start load more

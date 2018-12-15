@@ -45,9 +45,9 @@ class RefreshViewController: UITableViewController {
         // Set up pull to refresh
         setUpPullToRefresh()
 
-        tableView.addLoadMore(action: { [weak self] in
+        tableView.addLoadMore { [weak self] in
             self?.handleLoadMore()
-        })
+        }
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -78,15 +78,14 @@ extension RefreshViewController {
         switch headerStyle {
         case .custom:
             let animator = TextLoadingAnimator()
-            tableView.addPullToRefresh(withAnimator: animator, height: 60) { [weak self] in
+            tableView.addPullToRefresh(height: 60, contentView: animator) { [weak self] in
                 self?.handleRefresh()
             }
 
         case .default:
-            tableView.addPullToRefresh(action: { [weak self] in
+            tableView.addPullToRefresh() { [weak self] in
                 self?.handleRefresh()
-            })
-
+            }
         }
     }
 

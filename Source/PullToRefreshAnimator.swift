@@ -31,20 +31,19 @@ open class PullToRefreshAnimator: UIView, PullToRefreshDelegate {
     }
 
     open func pullToRefresh(_ view: PullToRefreshView, stateDidChange state: PullToRefreshState) {
-        if state == .idle {
+        switch state {
+        case .idle:
+            spinner.stopAnimating()
             spinner.isHidden = true
-        } else if state == .pullToRefresh {
+        case .pulling:
+            spinner.stopAnimating()
             spinner.isHidden = false
+        case .releaseToLoad:
+            spinner.stopAnimating()
+            spinner.isHidden = false
+        case .loading:
+            spinner.isHidden = false
+            spinner.startAnimating()
         }
-    }
-
-    open func pullToRefreshAnimationDidStart(_ view: PullToRefreshView) {
-        spinner.isHidden = false
-        spinner.startAnimating()
-    }
-
-    open func pullToRefreshAnimationDidEnd(_ view: PullToRefreshView) {
-        spinner.isHidden = true
-        spinner.stopAnimating()
     }
 }
