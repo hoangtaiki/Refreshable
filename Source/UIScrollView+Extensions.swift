@@ -27,7 +27,7 @@ public extension UIScrollView {
     }
 
     // Add pull to refresh view with default animator
-    public func addPullToRefresh(action: @escaping (() -> ())) {
+    func addPullToRefresh(action: @escaping (() -> ())) {
         let origin = CGPoint(x: 0, y: -pullToRefreshDefaultHeight)
         let size = CGSize(width: self.frame.size.width, height: pullToRefreshDefaultHeight)
         let frame = CGRect(origin: origin, size: size)
@@ -36,7 +36,7 @@ public extension UIScrollView {
         addSubview(pullToRefreshView!)
     }
 
-    public func addPullToRefresh(withAnimator animator: PullToRefreshDelegate & UIView,
+    func addPullToRefresh(withAnimator animator: PullToRefreshDelegate & UIView,
                                  height: CGFloat = pullToRefreshDefaultHeight,
                                  action: @escaping (() -> ())) {
         let frame = CGRect(x: 0, y: -height, width: self.frame.size.width, height: height)
@@ -46,12 +46,12 @@ public extension UIScrollView {
     }
 
     // Start pull to refresh
-    public func startPullToRefresh() {
+    func startPullToRefresh() {
         pullToRefreshView?.isLoading = true
     }
 
     // Stop pull to refresh
-    public func stopPullToRefresh() {
+    func stopPullToRefresh() {
         pullToRefreshView?.isLoading = false
     }
 }
@@ -71,7 +71,7 @@ public extension UIScrollView {
     }
 
     // Add load more view with default animator
-    public func addLoadMore(action: @escaping (() -> ())) {
+    func addLoadMore(action: @escaping (() -> ())) {
         let size = CGSize(width: self.frame.size.width, height: loadMoreDefaultHeight)
         let frame = CGRect(origin: .zero, size: size)
         loadMoreView = LoadMoreView(action: action, frame: frame)
@@ -81,17 +81,17 @@ public extension UIScrollView {
     }
 
     // Start load more
-    public func startLoadMore() {
+    func startLoadMore() {
         loadMoreView?.isLoading = true
     }
 
     // Stop load more
-    public func stopLoadMore() {
+    func stopLoadMore() {
         loadMoreView?.isLoading = false
     }
 
     // Set enable/disable for loading more
-    public func setLoadMoreEnable(_ enable: Bool) {
+    func setLoadMoreEnable(_ enable: Bool) {
         loadMoreView?.isEnabled = enable
     }
 }
