@@ -8,16 +8,19 @@ env:
   - FRAMEWORK_SCHEME="Refreshable"
   - EXAMPLE_SCHEME="iOS Example"
   matrix:
-    - DESTINATION="OS=12.2,name=iPhone X"   SCHEME="$FRAMEWORK_SCHEME"  BUILD_EXAMPLE="YES" POD_LINT="YES"
+    - DESTINATION="OS=12.1,name=iPhone X"   SCHEME="$FRAMEWORK_SCHEME"  BUILD_EXAMPLE="YES" POD_LINT="YES"
     - DESTINATION="OS=11.4,name=iPhone X"   SCHEME="$FRAMEWORK_SCHEME"  BUILD_EXAMPLE="YES" POD_LINT="NO"
 
 
 before_install:
-  - gem install cocoapods --pre --no-rdoc --no-ri --no-document --quiet
-script:
-  - set -o pipefail
+  - gem install cocoapods --prerelease --no-document --quiet
+  - gem install xcpretty --no-document --quiet
+  - pod --version
+  - xcpretty --version
   - xcodebuild -version
   - xcodebuild -showsdks
+script:
+  - set -o pipefail
 
   # Build Framework in Debug
   - xcodebuild -workspace "$WORKSPACE" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO build | xcpretty;
