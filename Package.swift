@@ -1,13 +1,27 @@
-//
-//  Package.swift
-//  Refreshable
-//
-//  Created by Hoangtaiki on 7/30/18.
-//  Copyright © 2018 toprating. All rights reserved.
-//
+// swift-tools-version: 5.9
+// The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
 let package = Package(
-    name: "Refreshable"
+    name: "Refreshable",
+    platforms: [
+        .iOS(.v13),
+    ],
+    products: [
+        // Products define the executables and libraries a package produces, making them visible to other packages.
+        .library(
+            name: "Refreshable",
+            targets: ["Refreshable"]),
+    ],
+    targets: [
+        // Targets are the basic building blocks of a package, defining a module or a test suite.
+        // Targets can depend on other targets in this package and products from dependencies.
+        .target(
+            name: "Refreshable"),
+        .testTarget(
+            name: "RefreshableTests",
+            dependencies: ["Refreshable"]),
+    ],
+    swiftLanguageVersions: [.v5]
 )
