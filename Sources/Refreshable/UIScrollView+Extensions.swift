@@ -70,28 +70,37 @@ public extension UIScrollView {
         }
     }
 
-    // Add load more view with default animator
-    func addLoadMore(action: @escaping (() -> ())) {
-        let size = CGSize(width: self.frame.size.width, height: loadMoreDefaultHeight)
+    // Add load more view with default animator    
+    func addLoadMore(action: @escaping () -> Void) {
+        let animator = LoadMoreAnimator()
+        let size = CGSize(width: frame.size.width, height: animator.height)
         let frame = CGRect(origin: .zero, size: size)
-        loadMoreView = LoadMoreView(action: action, frame: frame)
-        loadMoreView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
-        addSubview(loadMoreView!)
+        loadMoreView = LoadMoreView(frame: frame)
+        loadMoreView?.refreshAction = action
+        loadMoreView?.delegate = animator
+        insertSubview(loadMoreView!, at: 0)
+        
+        animator.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        animator.frame = loadMoreView!.bounds
+        loadMoreView?.addSubview(animator)
     }
 
-    // Start load more
     func startLoadMore() {
-        loadMoreView?.isLoading = true
+        loadMoreView?.beginRefreshing()
     }
-
-    // Stop load more
+    
     func stopLoadMore() {
-        loadMoreView?.isLoading = false
+        loadMoreView?.endRefreshing()
     }
-
-    // Set enable/disable for loading more
-    func setLoadMoreEnable(_ enable: Bool) {
+    
+    func setLoadMoreEnabled(_ enable: Bool) {
         loadMoreView?.isEnabled = enable
+    }
+    
+    func isLoadMoreEnabled() -> Bool {
+        guard let view = loadMoreView else {
+            return false
+        }
+        return view.isEnabled
     }
 }

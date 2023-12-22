@@ -8,36 +8,61 @@
 
 import UIKit
 
-open class LoadMoreAnimator: UIView, LoadMoreDelegate {
+private func <= <T: Comparable>(lhs: T?, rhs: T?) -> Bool {
+    switch (lhs, rhs) {
+        case let (l?, r?):
+            return l <= r
+        case (nil, _?):
+            return true
+        default:
+            return false
+    }
+}
 
-    open var spinner = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.medium)
+private enum LoadMoreState {
+    case idle
+    case refreshing
+}
 
+@objc protocol LoadMorable: AnyObject {
+    
+    var height: CGFloat { get }
+    
+    func didBeginRefreshing()
+    func didEndRefreshing()
+}
+
+open class LoadMoreAnimator: UIView, LoadMorable {
+    
+    let height: CGFloat = 50
+    let spinner = UIActivityIndicatorView(style: .medium)
+    
+    static func footer() -> LoadMoreAnimator {
+        return LoadMoreAnimator()
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
-        autoresizingMask = .flexibleWidth
-
         addSubview(spinner)
-        spinner.isHidden = true
+        isHidden = true
     }
-
-    public required init(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
+    
     open override func layoutSubviews() {
         super.layoutSubviews()
-
         spinner.center = CGPoint(x: frame.size.width * 0.5, y: frame.size.height * 0.5)
     }
-
-    open func loadMoreAnimationDidStart(view: LoadMoreView) {
-        spinner.isHidden = false
+    
+    required public init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func didBeginRefreshing() {
+        isHidden = false
         spinner.startAnimating()
     }
-
-    open func loadMoreAnimationDidEnd(view: LoadMoreView) {
-        spinner.isHidden = true
+    
+    func didEndRefreshing() {
+        isHidden = true
         spinner.stopAnimating()
-
     }
 }
