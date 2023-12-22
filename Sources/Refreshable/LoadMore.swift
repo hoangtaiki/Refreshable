@@ -8,144 +8,189 @@
 
 import UIKit
 
-public protocol LoadMoreDelegate {
-    func loadMoreAnimationDidStart(view: LoadMoreView)
-    func loadMoreAnimationDidEnd(view: LoadMoreView)
+private func <= <T: Comparable>(lhs: T?, rhs: T?) -> Bool {
+    switch (lhs, rhs) {
+        case let (l?, r?):
+            return l <= r
+        case (nil, _?):
+            return true
+        default:
+            return false
+    }
 }
 
-public class LoadMoreView: UIView {
+private enum LoadMoreState {
+    case idle
+    case refreshing
+}
 
-    // Default is true. When you set false load more view will be hide
-    var isEnabled: Bool = true {
+class LoadMoreView: UIView {
+    
+    weak var delegate: LoadMorable?
+    var refreshAction: (() -> Void)?
+    
+    var isEnabled = true {
         didSet {
-            if isEnabled {
-                frame = CGRect(x: 0, y: scrollView.contentSize.height, width: frame.size.width, height: height)
-            } else {
-                frame = CGRect(x: 0, y: scrollView.contentSize.height, width: frame.size.width, height: 0)
+            if isEnabled != oldValue {
+                if !isEnabled {
+                    hide()
+                } else {
+                    show()
+                }
             }
         }
     }
-
-    var isLoading: Bool = false {
+    
+    private var state: LoadMoreState = .idle {
         didSet {
-            if isLoading {
-                startAnimating()
-            } else {
-                stopAnimating()
+            if state != oldValue && state == .refreshing {
+                delegate?.didBeginRefreshing()
+                refreshAction?()
             }
         }
     }
-
-    private var height: CGFloat
-    private var scrollView: UIScrollView!
-    private var contentOffsetObservation: NSKeyValueObservation?
+    
+    private var attachedScrollView: UIScrollView!
     private var contentSizeObservation: NSKeyValueObservation?
-    private var panStateObservation: NSKeyValueObservation?
-
-    private var animator: LoadMoreDelegate
-    private var action: (() -> ()) = {}
-
-    convenience init(action: @escaping (() -> ()), frame: CGRect) {
-        var bounds = frame
-        bounds.origin.y = 0
-        let animator = LoadMoreAnimator(frame: bounds)
-        self.init(frame: frame, animator: animator)
-        self.action = action
-        addSubview(animator)
-    }
-
-    convenience init(action: @escaping (() -> ()), frame: CGRect, animator: LoadMoreDelegate) {
-        self.init(frame: frame, animator: animator)
-        self.action = action
-    }
-
-    public init(frame: CGRect, animator: LoadMoreDelegate) {
-        self.height = frame.height
-        self.animator = animator
+    private var contentOffsetObservation: NSKeyValueObservation?
+    
+    override init(frame: CGRect) {
         super.init(frame: frame)
-        self.autoresizingMask = .flexibleWidth
+        
+        backgroundColor = UIColor.clear
+        autoresizingMask = .flexibleWidth
     }
-
-    public required init?(coder aDecoder: NSCoder) {
+    
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    public override func willMove(toSuperview newSuperview: UIView?) {
+    
+    override func willMove(toSuperview newSuperview: UIView?) {
         super.willMove(toSuperview: newSuperview)
-
+        
+        // Reset default content inset
         if newSuperview == nil {
-            removeKeyValueObervation()
+            resetDefaultContentInset()
+            return
+        }
+        
+        guard let scrollview = newSuperview as? UIScrollView else {
+            return
+        }
+        
+        attachedScrollView = scrollview
+        attachedScrollView.alwaysBounceVertical = true
+        
+        updateContentInset()
+        updateFrame()
+        addObservations()
+    }
+    
+    func beginRefreshing() {
+        if window != nil {
+            state = .refreshing
         } else {
-            guard newSuperview is UIScrollView else { return }
-
-            scrollView = newSuperview as? UIScrollView
-            scrollView.alwaysBounceVertical = true
-
-            addKeyValueObservations()
+            if state != .refreshing {
+                state = .idle
+            }
         }
     }
-
+    
+    func endRefreshing() {
+        state = .idle
+        delegate?.didEndRefreshing()
+    }
+    
+    private func addObservations() {
+        addContentSizeObservation()
+        addContentOffsetObservation()
+    }
+    
+    private func removeObservations() {
+        contentSizeObservation = nil
+        contentOffsetObservation = nil
+    }
+    
+    private func updateContentInset() {
+        if isHidden { return  }
+        
+        var contentInset = attachedScrollView.contentInset
+        let bottom = contentInset.bottom + frame.height
+        
+        contentInset.bottom = bottom
+        attachedScrollView.contentInset = contentInset
+    }
+    
+    private func resetDefaultContentInset() {
+        // Update default content inset
+        var contentInset = attachedScrollView.contentInset
+        let bottom = contentInset.bottom - frame.height
+        contentInset.bottom = bottom
+        attachedScrollView.contentInset = contentInset
+    }
+    
+    private func updateFrame() {
+        let origin = CGPoint(x: 0, y: attachedScrollView.contentSize.height)
+        frame = CGRect(origin: origin, size: frame.size)
+    }
+    
+    private func addContentSizeObservation() {
+        contentSizeObservation = attachedScrollView?.observe(\.contentSize) { [weak self] (_, _) in
+            guard let `self` = self else { return }
+            
+            // Not handle in case load more is not enabled or load more is hidden
+            if !self.isEnabled || self.isHidden { return }
+            
+            self.updateFrame()
+        }
+    }
+    
+    private func addContentOffsetObservation() {
+        contentOffsetObservation = attachedScrollView?.observe(\.contentOffset, options: [.new, .old]) { [weak self] (_, change) in
+            guard let `self` = self else { return }
+            
+            // Not handle in case load more is not enabled or load more is hidden
+            if !self.isEnabled || self.isHidden { return }
+            
+            if self.state == .refreshing {
+                return
+            }
+            
+            let contentInset = self.attachedScrollView.contentInset
+            let contentSize = self.attachedScrollView.contentSize
+            let contentOffset = self.attachedScrollView.contentOffset
+            let scrollViewHeight = self.attachedScrollView.frame.size.height
+            let originY = self.frame.origin.y
+            
+            // Only handle incase content height + inset top > scrollview height
+            if contentInset.top + contentSize.height > scrollViewHeight {
+                // Check is scrolled to end of scrollview
+                if contentOffset.y > originY - scrollViewHeight + contentInset.bottom {
+                    // Only start refreshing more when new offset > old offset
+                    if change.newValue?.y <= change.oldValue?.y {
+                        return
+                    }
+                    
+                    self.beginRefreshing()
+                }
+            }
+        }
+    }
+    
     deinit {
-        removeKeyValueObervation()
+        removeObservations()
     }
 }
 
 extension LoadMoreView {
-
-    private func startAnimating() {
-        animator.loadMoreAnimationDidStart(view: self)
-
-        let frameHeight = frame.height
-        let contentSizeHeight = scrollView.contentSize.height
-        let scrollViewHeight = scrollView.bounds.height
-        let contentInsetBottom = scrollView.contentInset.bottom
-
-        UIView.animate(withDuration: 0.3, animations: {
-            self.scrollView.contentOffset.y = frameHeight + contentSizeHeight - scrollViewHeight + contentInsetBottom
-            self.scrollView.contentInset.bottom += frameHeight
-        }, completion: { _ in
-            self.action()
-        })
+    
+    private func hide() {
+        isHidden = true
+        resetDefaultContentInset()
     }
-
-    private func stopAnimating() {
-        animator.loadMoreAnimationDidEnd(view: self)
-
-        UIView.animate(withDuration: 0.3, animations: {
-            self.scrollView.contentInset.bottom -= self.frame.height
-            self.scrollView.setContentOffset(self.scrollView.contentOffset, animated: false)
-        })
-    }
-
-
-    private func addKeyValueObservations() {
-        contentOffsetObservation = scrollView.observe(\.contentOffset) { [weak self] scrollView, _ in
-            self?.handleContentOffsetChange()
-        }
-
-        contentSizeObservation = scrollView.observe(\.contentSize) { [weak self] scrollView, _ in
-            self?.handleContentSizeChange()
-        }
-    }
-
-    private func removeKeyValueObervation() {
-        contentOffsetObservation?.invalidate()
-        contentSizeObservation?.invalidate()
-
-        contentOffsetObservation = nil
-        contentSizeObservation = nil
-    }
-
-    private func handleContentOffsetChange() {
-        if isLoading || !isEnabled { return }
-
-        if scrollView.contentSize.height <= scrollView.bounds.height { return }
-        if scrollView.contentOffset.y > scrollView.contentSize.height - scrollView.bounds.height + scrollView.contentInset.bottom {
-            isLoading = true
-        }
-    }
-
-    private func handleContentSizeChange() {
-        frame = CGRect(x: 0, y: scrollView.contentSize.height, width: frame.size.width, height: frame.size.height)
+    
+    private func show() {
+        isHidden = false
+        updateContentInset()
     }
 }

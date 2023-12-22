@@ -97,14 +97,14 @@ extension RefreshViewController {
             self.numberRows = 10
             self.tableView.reloadData()
             self.tableView.stopPullToRefresh()
-            self.tableView.setLoadMoreEnable(true)
+            self.tableView.setLoadMoreEnabled(true)
         }
     }
 
     private func updateLoadMoreEnable() {
         if numberRows < 16 { return }
 
-        tableView.setLoadMoreEnable(false)
+        tableView.setLoadMoreEnabled(false)
     }
 
     private func handleLoadMore() {
