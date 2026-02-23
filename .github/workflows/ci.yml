@@ -42,13 +42,13 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "16.2"
+          xcode-version: "16"
 
       - name: Build and Test
         run: |
           xcodebuild clean test \
             -scheme Refreshable \
-            -destination 'platform=iOS Simulator,OS=18.2,name=iPhone 16 Pro' \
+            -destination '${{ matrix.destination }}' \
             -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
             -enableCodeCoverage YES \
             CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
@@ -70,7 +70,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "16.2"
+          xcode-version: "16"
 
       - name: Swift Package Manager Build
         run: |
@@ -81,13 +81,13 @@ jobs:
         run: |
           # Run tests using xcodebuild for iOS Simulator since it's a UIKit library
           xcodebuild test \
-            -scheme Refreshable-Package \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            -scheme Refreshable \
+            -destination '${{ matrix.destination }}' \
             CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
             ONLY_ACTIVE_ARCH=NO || \
           xcodebuild test \
             -scheme Refreshable \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            -destination '${{ matrix.destination }}' \
             CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
             ONLY_ACTIVE_ARCH=NO
 
