@@ -26,6 +26,7 @@ jobs:
       matrix:
         destination:
           - "platform=iOS Simulator,OS=18.2,name=iPhone 16"
+          - "platform=iOS Simulator,OS=17.5,name=iPhone 15"
 
     steps:
       - name: Checkout
@@ -42,7 +43,13 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "16"
+          xcode-version: "16.2"
+
+      - name: List available simulators
+        run: xcrun simctl list devices | grep iPhone | head -10
+
+      - name: List available schemes
+        run: xcodebuild -list -project Refreshable.xcodeproj
 
       - name: Build and Test
         run: |
@@ -52,6 +59,7 @@ jobs:
             -destination '${{ matrix.destination }}' \
             -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
             -enableCodeCoverage YES \
+            -verbose \
             CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
             ONLY_ACTIVE_ARCH=NO
 
