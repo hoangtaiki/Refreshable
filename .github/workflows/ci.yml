@@ -47,6 +47,7 @@ jobs:
       - name: Build and Test
         run: |
           xcodebuild clean test \
+            -project Refreshable.xcodeproj \
             -scheme Refreshable \
             -destination '${{ matrix.destination }}' \
             -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
@@ -63,6 +64,10 @@ jobs:
   test-spm:
     name: Test Swift Package Manager
     runs-on: macos-latest
+    strategy:
+      matrix:
+        destination:
+          - "platform=iOS Simulator,OS=18.2,name=iPhone 16"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -76,16 +81,14 @@ jobs:
         run: |
           swift package describe --type json > /dev/null
           echo "✅ Package.swift is valid"
+          swift build
 
       - name: Swift Package Manager Test
         run: |
           # Run tests using xcodebuild for iOS Simulator since it's a UIKit library
+          # SPM doesn't directly support iOS testing, so we use xcodebuild with the project
           xcodebuild test \
-            -scheme Refreshable \
-            -destination '${{ matrix.destination }}' \
-            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
-            ONLY_ACTIVE_ARCH=NO || \
-          xcodebuild test \
+            -project Refreshable.xcodeproj \
             -scheme Refreshable \
             -destination '${{ matrix.destination }}' \
             CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
