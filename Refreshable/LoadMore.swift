@@ -52,6 +52,11 @@ internal class LoadMoreView: UIView {
 
         backgroundColor = UIColor.clear
         autoresizingMask = .flexibleWidth
+
+        // Setup accessibility
+        self.isAccessibilityElement = true
+        self.accessibilityLabel = NSLocalizedString("Load more", comment: "Accessibility label for load more")
+        self.accessibilityHint = NSLocalizedString("Scroll down to load more content", comment: "Accessibility hint for load more")
     }
 
     @available(*, unavailable, message: "init(coder:) is not available. Use init(frame:) instead.")

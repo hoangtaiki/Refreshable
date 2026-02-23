@@ -99,6 +99,25 @@ public extension UIScrollView {
         loadView.addSubview(animator)
     }
 
+    /// Add load more view with custom animator
+    /// - Parameters:
+    ///   - animator: The custom animator that conforms to LoadMoreDelegate
+    ///   - action: The action to execute when load more is triggered
+    func addLoadMore(withAnimator animator: LoadMoreDelegate & UIView, action: @escaping () -> Void) {
+        let size = CGSize(width: frame.size.width, height: animator.height)
+        let frame = CGRect(origin: .zero, size: size)
+        loadMoreView = LoadMoreView(frame: frame)
+        loadMoreView?.refreshAction = action
+        loadMoreView?.delegate = animator
+
+        guard let loadView = loadMoreView else { return }
+        insertSubview(loadView, at: 0)
+
+        animator.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        animator.frame = loadView.bounds
+        loadView.addSubview(animator)
+    }
+
     /// Programmatically start the load more animation
     func startLoadMore() {
         loadMoreView?.beginRefreshing()

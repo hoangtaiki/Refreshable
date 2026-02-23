@@ -48,7 +48,7 @@ jobs:
         run: |
           xcodebuild clean test \
             -scheme Refreshable \
-            -destination '${{ matrix.destination }}' \
+            -destination 'platform=iOS Simulator,OS=18.2,name=iPhone 16 Pro' \
             -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
             -enableCodeCoverage YES \
             CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \

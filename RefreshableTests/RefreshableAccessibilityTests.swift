@@ -31,7 +31,13 @@ final class RefreshableAccessibilityTests: XCTestCase {
         scrollView.addPullToRefresh {
             // Refresh action
         }
+        // When - Force the view to be added to superview
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 568))
+        window.addSubview(scrollView)
+        window.makeKeyAndVisible()
 
+        // Wait a bit for view hierarchy to settle
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
         // Then
         let pullToRefreshView = scrollView.subviews.first as? PullToRefreshView
         XCTAssertNotNil(pullToRefreshView)
@@ -60,19 +66,30 @@ final class RefreshableAccessibilityTests: XCTestCase {
     func testRefreshAnimatorAccessibilityAnnouncement() async {
         // Given
         let animator = PullToRefreshAnimator()
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 568))
+        window.addSubview(scrollView)
+        window.makeKeyAndVisible()
 
         // When
         scrollView.addPullToRefresh(withAnimator: animator) {
             // Refresh action
         }
 
+        // Force the animation to start by triggering the state change
         scrollView.startPullToRefresh()
+
+        // Wait a bit for animation to start
+        try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
 
         // Then - Animator should be accessible
         XCTAssertNotNil(animator.spinner)
         XCTAssertTrue(animator.spinner.isAnimating)
 
         scrollView.stopPullToRefresh()
+
+        // Wait a bit for animation to stop
+        try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+
         XCTAssertFalse(animator.spinner.isAnimating)
     }
 

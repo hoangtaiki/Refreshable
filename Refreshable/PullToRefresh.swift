@@ -87,6 +87,11 @@ public class PullToRefreshView: UIView {
         self.animator = animator
         super.init(frame: frame)
         self.autoresizingMask = .flexibleWidth
+
+        // Setup accessibility
+        self.isAccessibilityElement = true
+        self.accessibilityLabel = NSLocalizedString("Pull to refresh", comment: "Accessibility label for pull to refresh")
+        self.accessibilityHint = NSLocalizedString("Pull down to refresh content", comment: "Accessibility hint for pull to refresh")
     }
 
     @available(*, unavailable, message: "init(coder:) is not available. Use init(frame:animator:) instead.")
