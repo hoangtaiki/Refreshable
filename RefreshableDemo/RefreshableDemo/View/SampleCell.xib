@@ -108,7 +108,7 @@
             <connections>
                 <outlet property="indexNumberLabel" destination="Ia4-3I-5Ob" id="b1a-pB-2Vs"/>
                 <outlet property="secondTitleViewTrailingAnchor" destination="9CO-73-e6n" id="EcU-nZ-3UM"/>
-                <outlet property="seperationLine" destination="LDr-Dj-4hH" id="m1Z-lb-YcA"/>
+                <outlet property="separationLine" destination="LDr-Dj-4hH" id="m1Z-lb-YcA"/>
                 <outlet property="thirdTitleViewTrailingAnchor" destination="bIo-CO-R1P" id="lhx-9e-3LE"/>
             </connections>
             <point key="canvasLocation" x="48.5" y="76"/>

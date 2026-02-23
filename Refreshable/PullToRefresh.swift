@@ -3,17 +3,17 @@
 //  Refreshable
 //
 //  Created by Hoangtaiki on 7/20/18.
-//  Copyright © 2018 toprating. All rights reserved.
+//  Copyright © 2018 Hoangtaiki. All rights reserved.
 //
 
 import UIKit
 import QuartzCore
 
 /// Pull To Refresh State
-/// idle
-/// loading: When user
-/// pullToRefresh: When scrollview is scroll
-/// releaseToRefresh: When scrolled distance are larger than view's height
+/// - idle: Default state
+/// - loading: When user has triggered refresh
+/// - pullToRefresh: When scrollview is being pulled down
+/// - releaseToRefresh: When scrolled distance is larger than view's height
 public enum PullToRefreshState {
     case idle
     case loading
@@ -21,14 +21,19 @@ public enum PullToRefreshState {
     case releaseToRefresh
 }
 
-public protocol PullToRefreshDelegate {
+/// Protocol for implementing custom pull to refresh animations
+public protocol PullToRefreshDelegate: AnyObject {
+    /// Called when refresh animation should start
     func pullToRefreshAnimationDidStart(_ view: PullToRefreshView)
+    /// Called when refresh animation should end
     func pullToRefreshAnimationDidEnd(_ view: PullToRefreshView)
+    /// Called when pull to refresh state changes
     func pullToRefresh(_ view: PullToRefreshView, stateDidChange state: PullToRefreshState)
 }
 
+/// A view that provides pull-to-refresh functionality
 public class PullToRefreshView: UIView {
-
+    /// Whether the view is currently in loading state
     var isLoading: Bool = false {
         didSet {
             if isLoading != oldValue {
@@ -43,14 +48,17 @@ public class PullToRefreshView: UIView {
 
     private var observation: NSKeyValueObservation?
     private var scrollView: UIScrollView!
-    private var originalContentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+    private var originalContentInset = UIEdgeInsets.zero
     private var insetTopDelta: CGFloat = 0.0
 
     private var animator: PullToRefreshDelegate
-    private var action: (() -> ()) = {}
+    private var action: (() -> Void) = {}
 
-
-    convenience init(action: @escaping (() -> ()), frame: CGRect) {
+    /// Convenience initializer with action and default animator
+    /// - Parameters:
+    ///   - action: The action to execute when refresh is triggered
+    ///   - frame: The frame for the pull to refresh view
+    public convenience init(action: @escaping (() -> Void), frame: CGRect) {
         var bounds = frame
         bounds.origin.y = 0
         let animator = PullToRefreshAnimator(frame: bounds)
@@ -59,24 +67,34 @@ public class PullToRefreshView: UIView {
         addSubview(animator)
     }
 
-    convenience init(action: @escaping (() -> ()), frame: CGRect, animator: PullToRefreshDelegate & UIView) {
+    /// Convenience initializer with action and custom animator
+    /// - Parameters:
+    ///   - action: The action to execute when refresh is triggered
+    ///   - frame: The frame for the pull to refresh view
+    ///   - animator: The custom animator that conforms to PullToRefreshDelegate
+    public convenience init(action: @escaping (() -> Void), frame: CGRect, animator: PullToRefreshDelegate & UIView) {
         self.init(frame: frame, animator: animator)
         self.action = action
         animator.frame = bounds
         addSubview(animator)
     }
 
+    /// Designated initializer
+    /// - Parameters:
+    ///   - frame: The frame for the pull to refresh view
+    ///   - animator: The animator that conforms to PullToRefreshDelegate
     public init(frame: CGRect, animator: PullToRefreshDelegate & UIView) {
         self.animator = animator
         super.init(frame: frame)
         self.autoresizingMask = .flexibleWidth
     }
 
+    @available(*, unavailable, message: "init(coder:) is not available. Use init(frame:animator:) instead.")
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func willMove(toSuperview newSuperview: UIView!) {
+    override public func willMove(toSuperview newSuperview: UIView!) {
         super.willMove(toSuperview: newSuperview)
 
         guard newSuperview is UIScrollView else { return }
@@ -86,7 +104,7 @@ public class PullToRefreshView: UIView {
         scrollView.alwaysBounceVertical = true
         originalContentInset = scrollView.contentInset
 
-        observation = scrollView.observe(\.contentOffset, options: [.initial]) { [unowned self] (sc, change) in
+        observation = scrollView.observe(\.contentOffset, options: [.initial]) { [unowned self] _, _ in
             self.handleScrollViewOffsetChange()
         }
     }
@@ -97,9 +115,7 @@ public class PullToRefreshView: UIView {
 }
 
 extension PullToRefreshView {
-
     private func handleScrollViewOffsetChange() {
-
         // Why we need that code when isLoading?
         // We need handle two case
         // 1. It is normal case: Scroll and drag then scrollview will scroll to a postion and spin
@@ -125,7 +141,7 @@ extension PullToRefreshView {
             return
         }
 
-        var adjustedContentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        var adjustedContentInset = UIEdgeInsets.zero
         if #available(iOS 11.0, *) {
             adjustedContentInset = scrollView.adjustedContentInset
         }
@@ -166,7 +182,7 @@ extension PullToRefreshView {
         UIView.animate(withDuration: 0.3, delay: 0, options: UIView.AnimationOptions(), animations: {
             self.scrollView.contentInset = UIEdgeInsets(top: frameHeight + contentInset.top, left: 0, bottom: 0, right: 0)
             self.scrollView.contentOffset = contentOffset
-        }, completion: { finished in
+        }, completion: { _ in
             self.animator.pullToRefreshAnimationDidStart(self)
             self.action()
         })
@@ -175,9 +191,9 @@ extension PullToRefreshView {
     private func stopAnimating() {
         UIView.animate(withDuration: 0.3, animations: {
             var oldInset = self.scrollView.contentInset
-            oldInset.top = oldInset.top + self.insetTopDelta
+            oldInset.top += self.insetTopDelta
             self.scrollView.contentInset = oldInset
-        }, completion: { finished in
+        }, completion: { _ in
             self.animator.pullToRefreshAnimationDidEnd(self)
         })
     }

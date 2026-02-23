@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		255203772F4CA7560022841D /* Refreshable in Frameworks */ = {isa = PBXBuildFile; productRef = 255203762F4CA7560022841D /* Refreshable */; };
 		25E59F1F2B3573A0000EFB92 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25E59F1E2B3573A0000EFB92 /* AppDelegate.swift */; };
 		25E59F212B3573A0000EFB92 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25E59F202B3573A0000EFB92 /* SceneDelegate.swift */; };
 		25E59F262B3573A0000EFB92 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 25E59F242B3573A0000EFB92 /* Main.storyboard */; };
@@ -69,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				255203772F4CA7560022841D /* Refreshable in Frameworks */,
 				25E59F532B3573C8000EFB92 /* Refreshable in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -189,6 +191,7 @@
 			name = RefreshableDemo;
 			packageProductDependencies = (
 				25E59F522B3573C8000EFB92 /* Refreshable */,
+				255203762F4CA7560022841D /* Refreshable */,
 			);
 			productName = RefreshableDemo;
 			productReference = 25E59F1B2B3573A0000EFB92 /* RefreshableDemo.app */;
@@ -263,7 +266,7 @@
 			);
 			mainGroup = 25E59F122B3573A0000EFB92;
 			packageReferences = (
-				25E59F512B3573C8000EFB92 /* XCLocalSwiftPackageReference ".." */,
+				255203752F4CA7560022841D /* XCLocalSwiftPackageReference "../../Refreshable" */,
 			);
 			productRefGroup = 25E59F1C2B3573A0000EFB92 /* Products */;
 			projectDirPath = "";
@@ -659,13 +662,17 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		25E59F512B3573C8000EFB92 /* XCLocalSwiftPackageReference ".." */ = {
+		255203752F4CA7560022841D /* XCLocalSwiftPackageReference "../../Refreshable" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ..;
+			relativePath = ../../Refreshable;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		255203762F4CA7560022841D /* Refreshable */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Refreshable;
+		};
 		25E59F522B3573C8000EFB92 /* Refreshable */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Refreshable;

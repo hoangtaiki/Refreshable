@@ -1,22 +1,22 @@
 //
 //  TextLoadingAnimator.swift
-//  iOS Example
+//  Refreshable
 //
 //  Created by Hoangtaiki on 7/29/18.
-//  Copyright © 2018 toprating. All rights reserved.
+//  Copyright © 2018 Hoangtaiki. All rights reserved.
 //
 
 import UIKit
 import Refreshable
 
 class TextLoadingAnimator: UIView, PullToRefreshDelegate {
-
     let spinner = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.medium)
 
     let titleLabel: UILabel = {
-        let label = UILabel.init(frame: CGRect.zero)
+        let label = UILabel(frame: CGRect.zero)
         label.font = UIFont.systemFont(ofSize: 14.0)
-        label.textColor = UIColor.init(white: 0.625, alpha: 1.0)
+        // swiftlint:disable:next object_literal
+        label.textColor = UIColor(white: 0.625, alpha: 1.0)
         label.textAlignment = .left
         return label
     }()
@@ -31,7 +31,8 @@ class TextLoadingAnimator: UIView, PullToRefreshDelegate {
         titleLabel.isHidden = true
     }
 
-    public required init(coder aDecoder: NSCoder) {
+    @available(*, unavailable)
+    required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -62,7 +63,8 @@ class TextLoadingAnimator: UIView, PullToRefreshDelegate {
             titleLabel.text = "Release to start refresh"
         case .loading:
             titleLabel.text = "Loading..."
-        default: break
+        default:
+            break
         }
 
         self.setNeedsLayout()
@@ -81,5 +83,4 @@ class TextLoadingAnimator: UIView, PullToRefreshDelegate {
 
         titleLabel.isHidden = true
     }
-
 }

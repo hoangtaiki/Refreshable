@@ -1,9 +1,9 @@
 //
 //  ViewController.swift
-//  iOS Example
+//  Refreshable
 //
 //  Created by Hoangtaiki on 7/20/18.
-//  Copyright © 2018 toprating. All rights reserved.
+//  Copyright © 2018 Hoangtaiki. All rights reserved.
 //
 
 import UIKit
@@ -19,7 +19,6 @@ enum HeaderStyle: Int {
 }
 
 class RefreshViewController: UITableViewController {
-
     var numberRows = 10
     var headerStyle: HeaderStyle = .default
 
@@ -28,6 +27,7 @@ class RefreshViewController: UITableViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable, message: "init(coder:) is not available. Use init(headerStyle:) instead.")
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -37,9 +37,10 @@ class RefreshViewController: UITableViewController {
 
         title = "Refreshable"
         addBackBarButton()
-        view.backgroundColor = UIColor(red: 210/255, green: 210/255, blue: 210/255, alpha: 1)
+        // swiftlint:disable:next object_literal
+        view.backgroundColor = UIColor(red: 210 / 255, green: 210 / 255, blue: 210 / 255, alpha: 1)
 
-        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        tableView.contentInset = UIEdgeInsets.zero
         tableView.register(SampleCell.nib(), forCellReuseIdentifier: SampleCell.reuseIdentifier)
 
         // Set up pull to refresh
@@ -49,22 +50,23 @@ class RefreshViewController: UITableViewController {
             self?.handleLoadMore()
         })
     }
-    
+
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return numberRows
+        numberRows
     }
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 128
+        128
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        // swiftlint:disable:next force_cast
         let cell = tableView.dequeueReusableCell(withIdentifier: SampleCell.reuseIdentifier, for: indexPath) as! SampleCell
-        cell.isSeperationLineHidden = indexPath.row == numberRows - 1
+        cell.isSeparationLineHidden = indexPath.row == numberRows - 1
         cell.indexNumberLabel.text = indexPath.row.description
 
         return cell
@@ -72,8 +74,6 @@ class RefreshViewController: UITableViewController {
 }
 
 extension RefreshViewController {
-
-
     private func setUpPullToRefresh() {
         switch headerStyle {
         case .custom:
@@ -86,7 +86,6 @@ extension RefreshViewController {
             tableView.addPullToRefresh(action: { [weak self] in
                 self?.handleRefresh()
             })
-
         }
     }
 

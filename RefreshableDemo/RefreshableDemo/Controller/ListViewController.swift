@@ -1,15 +1,14 @@
 //
 //  ListViewController.swift
-//  iOS Example
+//  Refreshable
 //
 //  Created by Hoangtaiki on 7/29/18.
-//  Copyright © 2018 toprating. All rights reserved.
+//  Copyright © 2018 Hoangtaiki. All rights reserved.
 //
 
 import UIKit
 
 class ListViewController: UITableViewController {
-
     override func viewDidLoad() {
         super.viewDidLoad()
 

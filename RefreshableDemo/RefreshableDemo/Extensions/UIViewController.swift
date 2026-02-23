@@ -1,16 +1,16 @@
 //
 //  UIViewController.swift
-//  iOS Example
+//  Refreshable
 //
 //  Created by Hoangtaiki on 7/29/18.
-//  Copyright © 2018 toprating. All rights reserved.
+//  Copyright © 2018 Hoangtaiki. All rights reserved.
 //
 
 import UIKit
 
 extension UIViewController {
-
     public func addBackBarButton() {
+        // swiftlint:disable:next object_literal
         let image = UIImage(named: "ic_nav_back")
         let button = UIBarButtonItem(image: image,
                                      style: .plain,
@@ -19,7 +19,8 @@ extension UIViewController {
         navigationItem.leftBarButtonItem = button
     }
 
-    @objc open func tappedOnBackBarButton(sender: UIBarButtonItem) {
+    @objc
+    open func tappedOnBackBarButton(sender: UIBarButtonItem) {
         _ = navigationController?.popViewController(animated: true)
     }
 }

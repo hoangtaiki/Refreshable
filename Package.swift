@@ -7,21 +7,38 @@ let package = Package(
     name: "Refreshable",
     platforms: [
         .iOS(.v13),
+        .macCatalyst(.v13)
     ],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "Refreshable",
-            targets: ["Refreshable"]),
+            targets: ["Refreshable"]
+        ),
+    ],
+    dependencies: [
+        // Dependencies declare other packages that this package depends on.
+        // .package(url: /* package url */, from: "1.0.0"),
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "Refreshable"),
+            name: "Refreshable",
+            dependencies: [],
+            path: "Refreshable",
+            resources: [],
+            swiftSettings: [
+                .enableUpcomingFeature("BareSlashRegexLiterals"),
+                .enableUpcomingFeature("ConciseMagicFile"),
+                .enableUpcomingFeature("ExistentialAny"),
+                .enableUpcomingFeature("ForwardTrailingClosures"),
+                .enableUpcomingFeature("ImplicitOpenExistentials"),
+                .enableUpcomingFeature("StrictConcurrency"),
+            ]
+        ),
         .testTarget(
             name: "RefreshableTests",
-            dependencies: ["Refreshable"]),
+            dependencies: ["Refreshable"],
+            path: "RefreshableTests"
+        ),
     ],
     swiftLanguageVersions: [.v5]
 )

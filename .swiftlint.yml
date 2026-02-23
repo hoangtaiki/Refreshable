@@ -1,0 +1,97 @@
+# SwiftLint Configuration File
+
+# Included directories
+included:
+  - Refreshable
+  - RefreshableTests
+  - RefreshableDemo/RefreshableDemo
+
+# Excluded directories  
+excluded:
+  - Carthage
+  - Pods
+  - DerivedData
+  - .build
+  - RefreshableDemo/RefreshableDemo.xcodeproj
+  - RefreshableDemo/RefreshableDemo/Assets.xcassets
+
+# Disabled rules
+disabled_rules:
+  - type_name
+  - todo
+  - weak_delegate
+
+# Enabled rules
+opt_in_rules:
+  - array_init
+  - attributes
+  - closure_spacing
+  - collection_alignment
+  - contains_over_filter_count
+  - contains_over_filter_is_empty
+  - contains_over_first_not_nil
+  - convenience_type
+  - discouraged_object_literal
+  - empty_collection_literal
+  - empty_count
+  - empty_string
+  - enum_case_associated_values_count
+  - explicit_init
+  - fallthrough
+  - fatal_error_message
+  - file_header
+  - first_where
+  - flatmap_over_map_reduce
+  - force_unwrapping
+  - identical_operands
+  - implicit_return
+  - joined_default_parameter
+  - last_where
+  - legacy_random
+  - literal_expression_end_indentation
+  - lower_acl_than_parent
+  - modifier_order
+  - nimble_operator
+  - nslocalizedstring_key
+  - number_separator
+  - object_literal
+  - operator_usage_whitespace
+  - overridden_super_call
+  - override_in_extension
+  - pattern_matching_keywords
+  - prefer_self_type_over_type_of_self
+  - prefer_zero_over_explicit_init
+  - redundant_nil_coalescing
+  - redundant_type_annotation
+  - single_test_class
+  - sorted_first_last
+  - switch_case_on_newline
+  - toggle_bool
+  - unavailable_function
+  - unneeded_parentheses_in_closure_argument
+  - untyped_error_in_catch
+  - vertical_parameter_alignment_on_call
+  - vertical_whitespace_closing_braces
+  - vertical_whitespace_opening_braces
+  - yoda_condition
+
+# Custom rules configuration
+line_length: 160
+type_body_length: 300
+function_body_length: 40
+cyclomatic_complexity:
+  warning: 10
+  error: 20
+
+# File header rule
+file_header:
+  required_pattern: |
+                    \/\/
+                    \/\/  .*?\.swift
+                    \/\/  Refreshable
+                    \/\/
+                    \/\/  Created by .* on \d{1,2}\/\d{1,2}\/\d{2,4}\.
+                    \/\/  Copyright © \d{4} .* All rights reserved\.
+                    \/\/
+
+reporter: "xcode" # Xcode, JSON, CSV, checkstyle, codeclimate, junit, html, emoji, sonarqube, markdown, github-actions-logging
