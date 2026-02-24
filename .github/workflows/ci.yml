@@ -154,7 +154,7 @@ jobs:
           xcodebuild clean build \
             -project 'RefreshableDemo.xcodeproj' \
             -scheme 'RefreshableDemo' \
-            -destination 'platform=iOS Simulator,name=iPhone SE (3rd generation)' \
+            -destination 'platform=iOS Simulator,OS=18.6,name=iPhone SE (3rd generation)' \
             -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
             CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
             ONLY_ACTIVE_ARCH=NO
