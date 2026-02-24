@@ -30,7 +30,7 @@ DerivedData/
 /Packages
 Package.pins
 Package.resolved
-*.xcodeproj
+*.xcodeproj  # Removed to allow tracking project files
 xcuserdata/
 .swiftpm/configuration/registries.json
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
@@ -66,3 +66,6 @@ fastlane/test_output
 
 ## SPM Artifacts
 .swiftpm/
+
+# Allow tracking of shared Xcode scheme files
+!Refreshable.xcodeproj/xcshareddata/xcschemes/*.xcscheme

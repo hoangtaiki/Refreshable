@@ -43,10 +43,30 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "16"
+          xcode-version: "16.2"
 
-      - name: List available schemes
-        run: xcodebuild -list -project Refreshable.xcodeproj
+      - name: Debug - Check project structure
+        run: |
+          echo "=== Project Structure ==="
+          ls -la Refreshable.xcodeproj/
+          echo "\n=== Shared Schemes Directory ==="
+          ls -la Refreshable.xcodeproj/xcshareddata/ || echo "No xcshareddata directory"
+          ls -la Refreshable.xcodeproj/xcshareddata/xcschemes/ || echo "No shared schemes directory"
+          echo "\n=== User Schemes Directory ==="
+          ls -la Refreshable.xcodeproj/xcuserdata/ || echo "No xcuserdata directory"
+          find Refreshable.xcodeproj -name "*.xcscheme" -exec echo "Found scheme: {}" \;          echo "\\n=== Git Status of Scheme Files ==="
+          git ls-files Refreshable.xcodeproj/xcshareddata/xcschemes/ || echo "Shared schemes not tracked by git"
+          echo "\\n=== Scheme File Permissions ==="
+          find Refreshable.xcodeproj -name "*.xcscheme" -exec ls -la {} \\;
+      - name: Debug - List available schemes
+        run: |
+          echo "=== Available Schemes and Targets ==="
+          xcodebuild -list -project Refreshable.xcodeproj || echo "Failed to list schemes"
+
+      - name: Debug - Show scheme file contents
+        run: |
+          echo "=== Scheme File Contents ==="
+          find Refreshable.xcodeproj -name "Refreshable.xcscheme" -exec echo "Content of {}:" \; -exec cat {} \;
 
       - name: Build and Test
         run: |
@@ -80,7 +100,13 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "16"
+          xcode-version: "16.2"
+
+      - name: Debug - SPM scheme check
+        run: |
+          echo "=== SPM Scheme Check ==="
+          xcodebuild -list -project Refreshable.xcodeproj
+          find Refreshable.xcodeproj -name "*.xcscheme"
 
       - name: Swift Package Manager Validation
         run: |
@@ -92,12 +118,19 @@ jobs:
         run: |
           # Run tests using xcodebuild for iOS Simulator since it's a UIKit library
           # SPM doesn't directly support iOS testing, so we use xcodebuild with the project
+          echo "=== Running SPM Test with Debug ==="
+          echo "Destination: ${{ matrix.destination }}"
           xcodebuild test \
             -project Refreshable.xcodeproj \
             -scheme Refreshable \
             -destination '${{ matrix.destination }}' \
+            -verbose \
             CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
-            ONLY_ACTIVE_ARCH=NO
+            ONLY_ACTIVE_ARCH=NO || {
+              echo "=== Test failed, showing detailed info ==="
+              xcodebuild -showBuildSettings -project Refreshable.xcodeproj -scheme Refreshable
+              exit 1
+            }
 
   test-cocoapods:
     name: Test CocoaPods Integration
