@@ -1,23 +1,22 @@
 //
 //  SceneDelegate.swift
-//  RefreshableDemo
+//  Refreshable
 //
 //  Created by Harry Tran on 22/12/2023.
+//  Copyright © 2024 Refreshable. All rights reserved.
 //
 
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
     var window: UIWindow?
-
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-        guard let _ = (scene as? UIWindowScene) else { return }
-        
+        guard (scene as? UIWindowScene) != nil else { return }
+
         applyNavigationBarAppearance()
     }
 
@@ -53,28 +52,27 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 }
 
-
 extension SceneDelegate {
-    
     private func applyNavigationBarAppearance() {
         let newNavBarAppearance = customNavBarAppearance()
-        
+
         let appearance = UINavigationBar.appearance()
         appearance.scrollEdgeAppearance = newNavBarAppearance
         appearance.compactAppearance = newNavBarAppearance
         appearance.standardAppearance = newNavBarAppearance
         appearance.compactScrollEdgeAppearance = newNavBarAppearance
     }
-    
+
     func customNavBarAppearance() -> UINavigationBarAppearance {
         let customNavBarAppearance = UINavigationBarAppearance()
         // Set background color
         customNavBarAppearance.configureWithTransparentBackground()
         customNavBarAppearance.shadowColor = .clear
-        customNavBarAppearance.backgroundColor = UIColor(red: 82/255, green: 100/255, blue: 176/255, alpha: 0.96)
+        // swiftlint:disable:next object_literal
+        customNavBarAppearance.backgroundColor = UIColor(red: 82 / 255, green: 100 / 255, blue: 176 / 255, alpha: 0.96)
         customNavBarAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white,
                                                       NSAttributedString.Key.font: UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.medium)]
-        
+
         return customNavBarAppearance
     }
 }

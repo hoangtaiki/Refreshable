@@ -1,0 +1,266 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release"
+        required: true
+        type: string
+
+# Set permissions for GITHUB_TOKEN
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  validate:
+    name: Validate Release
+    runs-on: macos-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      is-prerelease: ${{ steps.version.outputs.is-prerelease }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version from tag
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.tag }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/}"
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+          # Check if it's a prerelease (contains alpha, beta, rc)
+          if [[ $VERSION =~ (alpha|beta|rc) ]]; then
+            echo "is-prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "is-prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Validate tag format
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+(\.[0-9]+)?)?$ ]]; then
+            echo "Tag format is invalid. Expected format: X.Y.Z or X.Y.Z-prerelease"
+            echo "Got: $VERSION"
+            exit 1
+          fi
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: true
+
+      - name: Install CocoaPods
+        run: gem install cocoapods
+
+      - name: Pod spec lint
+        run: pod spec lint Refreshable.podspec --swift-version=5.9 --allow-warnings
+
+  build:
+    name: Build Framework
+    needs: validate
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "16.2"
+
+      - name: Build iOS Framework
+        run: |
+          set -eo pipefail
+          xcodebuild archive \
+            -scheme Refreshable \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/ios.xcarchive \
+            SKIP_INSTALL=NO \
+            BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Build iOS Simulator Framework
+        run: |
+          set -eo pipefail
+          xcodebuild archive \
+            -scheme Refreshable \
+            -destination 'generic/platform=iOS Simulator' \
+            -archivePath build/ios_simulator.xcarchive \
+            SKIP_INSTALL=NO \
+            BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Create XCFramework
+        run: |
+          xcodebuild -create-xcframework \
+            -framework build/ios.xcarchive/Products/Library/Frameworks/Refreshable.framework \
+            -framework build/ios_simulator.xcarchive/Products/Library/Frameworks/Refreshable.framework \
+            -output build/Refreshable.xcframework
+
+      - name: Package XCFramework
+        run: |
+          cd build
+          zip -r Refreshable.xcframework.zip Refreshable.xcframework
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcframework
+          path: build/Refreshable.xcframework.zip
+          retention-days: 5
+
+  release:
+    name: Create GitHub Release
+    needs: [validate, build]
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: xcframework
+          path: ./artifacts
+
+      - name: Generate release notes
+        id: release-notes
+        run: |
+          VERSION="${{ needs.validate.outputs.version }}"
+
+          # Get previous tag
+          PREVIOUS_TAG=$(git tag --sort=-version:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+' | head -2 | tail -1)
+
+          if [ -n "$PREVIOUS_TAG" ] && [ "$PREVIOUS_TAG" != "$VERSION" ]; then
+            echo "## What's Changed" > release_notes.md
+            echo "" >> release_notes.md
+            git log --pretty=format:"* %s (%h)" ${PREVIOUS_TAG}..HEAD >> release_notes.md
+            echo "" >> release_notes.md
+            echo "" >> release_notes.md
+            echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREVIOUS_TAG}...${VERSION}" >> release_notes.md
+          else
+            echo "## What's New" > release_notes.md
+            echo "" >> release_notes.md
+            echo "Initial release of Refreshable" >> release_notes.md
+          fi
+
+          echo "" >> release_notes.md
+          echo "## Installation" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "### Swift Package Manager" >> release_notes.md
+          echo '```swift' >> release_notes.md
+          echo 'dependencies: [' >> release_notes.md
+          echo '    .package(url: "https://github.com/${{ github.repository }}.git", from: "'${VERSION}'")' >> release_notes.md
+          echo ']' >> release_notes.md
+          echo '```' >> release_notes.md
+          echo "" >> release_notes.md
+          echo "### CocoaPods" >> release_notes.md
+          echo '```ruby' >> release_notes.md
+          echo "pod 'Refreshable', '~> ${VERSION}'" >> release_notes.md
+          echo '```' >> release_notes.md
+          echo "" >> release_notes.md
+          echo "### Carthage" >> release_notes.md
+          echo '```' >> release_notes.md
+          echo 'github "${{ github.repository }}" ~> '${VERSION} >> release_notes.md
+          echo '```' >> release_notes.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.validate.outputs.version }}
+          name: Release ${{ needs.validate.outputs.version }}
+          body_path: release_notes.md
+          files: |
+            ./artifacts/Refreshable.xcframework.zip
+          draft: false
+          prerelease: ${{ needs.validate.outputs.is-prerelease == 'true' }}
+          generate_release_notes: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-cocoapods:
+    name: Publish to CocoaPods
+    needs: [validate, release]
+    runs-on: macos-latest
+    if: needs.validate.outputs.is-prerelease == 'false'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: true
+
+      - name: Install CocoaPods
+        run: gem install cocoapods
+
+      - name: Validate CocoaPods credentials
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        run: |
+          if [ -z "$COCOAPODS_TRUNK_TOKEN" ]; then
+            echo "⚠️  COCOAPODS_TRUNK_TOKEN not set. Skipping CocoaPods deployment."
+            echo "To enable CocoaPods publishing, add COCOAPODS_TRUNK_TOKEN to repository secrets."
+            exit 0
+          fi
+
+      - name: Deploy to CocoaPods
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        run: |
+          if [ -n "$COCOAPODS_TRUNK_TOKEN" ]; then
+            echo "Publishing to CocoaPods..."
+            pod trunk push Refreshable.podspec --swift-version=5.9 --allow-warnings
+            echo "✅ Successfully published to CocoaPods"
+          else
+            echo "ℹ️  Skipping CocoaPods deployment (no token configured)"
+          fi
+
+  notify:
+    name: Post-release Notifications
+    needs: [validate, release, publish-cocoapods]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Summary
+        run: |
+          echo "# Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ needs.validate.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Prerelease:** ${{ needs.validate.outputs.is-prerelease }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.release.result }}" = "success" ]; then
+            echo "✅ **GitHub Release:** Created successfully" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **GitHub Release:** Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "${{ needs.validate.outputs.is-prerelease }}" = "false" ]; then
+            if [ "${{ needs.publish-cocoapods.result }}" = "success" ]; then
+              echo "✅ **CocoaPods:** Published successfully" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "❌ **CocoaPods:** Publication failed or skipped" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "⏭️  **CocoaPods:** Skipped (prerelease)" >> $GITHUB_STEP_SUMMARY
+          fi

@@ -1,0 +1,205 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main, develop]
+  pull_request:
+    branches: [master, main, develop]
+
+jobs:
+  swiftlint:
+    name: SwiftLint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: SwiftLint
+        uses: norio-nomura/action-swiftlint@3.2.1
+        with:
+          args: --strict
+
+  test-ios:
+    name: Test iOS
+    runs-on: macos-14
+    strategy:
+      matrix:
+        destination:
+          - "platform=iOS Simulator,OS=18.2,name=iPhone 16 Pro Max"
+          - "platform=iOS Simulator,OS=17.5,name=iPhone 15 Pro Max"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache derived data
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-derived-data-${{ hashFiles('**/*.xcodeproj') }}
+          restore-keys: |
+            ${{ runner.os }}-derived-data-
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "16"
+
+      - name: Debug - List available schemes
+        run: |
+          echo "=== Available Schemes and Targets ==="
+          xcodebuild -list -project Refreshable.xcodeproj || echo "Failed to list schemes"
+
+      - name: Build and Test
+        run: |
+          xcodebuild clean test \
+            -project Refreshable.xcodeproj \
+            -scheme Refreshable \
+            -destination '${{ matrix.destination }}' \
+            -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
+            -enableCodeCoverage YES \
+            -verbose \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
+            ONLY_ACTIVE_ARCH=NO
+
+      - name: Upload coverage to Codecov
+        if: success()
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: false
+
+  test-spm:
+    name: Test Swift Package Manager
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        destination:
+          - "platform=iOS Simulator,OS=18.6,name=iPhone SE (3rd generation)"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "16"
+
+      - name: Debug - SPM scheme check
+        run: |
+          echo "=== SPM Scheme Check ==="
+          xcodebuild -list -project Refreshable.xcodeproj
+          find Refreshable.xcodeproj -name "*.xcscheme"
+
+      - name: Swift Package Manager Validation
+        run: |
+          swift package describe --type json > /dev/null
+          echo "✅ Package.swift is valid"
+          echo "ℹ️  Note: Swift build skipped - UIKit library requires iOS platform"
+
+      - name: Swift Package Manager Test
+        run: |
+          # Run tests using xcodebuild for iOS Simulator since it's a UIKit library
+          # SPM doesn't directly support iOS testing, so we use xcodebuild with the project
+          echo "=== Running SPM Test with Debug ==="
+          echo "Destination: ${{ matrix.destination }}"
+          xcodebuild test \
+            -project Refreshable.xcodeproj \
+            -scheme Refreshable \
+            -destination '${{ matrix.destination }}' \
+            -verbose \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
+            ONLY_ACTIVE_ARCH=NO || {
+              echo "=== Test failed, showing detailed info ==="
+              xcodebuild -showBuildSettings -project Refreshable.xcodeproj -scheme Refreshable
+              exit 1
+            }
+
+  test-cocoapods:
+    name: Test CocoaPods Integration
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: true
+
+      - name: Install CocoaPods
+        run: gem install cocoapods
+
+      - name: Pod lib lint
+        run: pod lib lint --swift-version=5.9 --allow-warnings --verbose
+
+  example-project:
+    name: Build Example Project
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache derived data
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-example-derived-data-${{ hashFiles('RefreshableDemo/**/*.xcodeproj') }}
+          restore-keys: |
+            ${{ runner.os }}-example-derived-data-
+
+      - name: Build Example
+        working-directory: ./RefreshableDemo
+        run: |
+          xcodebuild clean build \
+            -project 'RefreshableDemo.xcodeproj' \
+            -scheme 'RefreshableDemo' \
+            -destination 'platform=iOS Simulator,OS=18.6,name=iPhone SE (3rd generation)' \
+            -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
+            ONLY_ACTIVE_ARCH=NO
+
+  documentation:
+    name: Documentation
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "16"
+
+      - name: Generate Documentation
+        run: |
+          xcodebuild docbuild \
+            -scheme Refreshable \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath ./docs_output \
+            -quiet || echo "Documentation generation failed, continuing without docs"
+
+      - name: Find the generated .doccarchive path
+        id: find_doccarchive
+        run: |
+          DOC_ARCHIVE_PATH=$(find ./docs_output -name "*.doccarchive" | head -n 1)
+          if [ -z "$DOC_ARCHIVE_PATH" ]; then
+            echo "No .doccarchive found!" >&2
+            echo "doccarchive_path=" >> $GITHUB_OUTPUT
+          else
+            echo "doccarchive_path=$DOC_ARCHIVE_PATH" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Convert DocC Archive for Web Hosting
+        if: steps.find_doccarchive.outputs.doccarchive_path != ''
+        run: |
+          xcrun docc convert "${{ steps.find_doccarchive.outputs.doccarchive_path }}" \
+            --output-path ./html_docs \
+            --hosting-base-path /Refreshable \
+            --allow-arbitrary-catalog-directories
+
+      - name: Upload documentation as an artifact
+        if: steps.find_doccarchive.outputs.doccarchive_path != ''
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./html_docs
