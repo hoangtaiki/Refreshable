@@ -54,7 +54,8 @@ jobs:
           ls -la Refreshable.xcodeproj/xcshareddata/xcschemes/ || echo "No shared schemes directory"
           echo "\n=== User Schemes Directory ==="
           ls -la Refreshable.xcodeproj/xcuserdata/ || echo "No xcuserdata directory"
-          find Refreshable.xcodeproj -name "*.xcscheme" -exec echo "Found scheme: {}" \;          echo "\\n=== Git Status of Scheme Files ==="
+          find Refreshable.xcodeproj -name "*.xcscheme" -exec echo "Found scheme: {}" \;
+          echo "\\n=== Git Status of Scheme Files ==="
           git ls-files Refreshable.xcodeproj/xcshareddata/xcschemes/ || echo "Shared schemes not tracked by git"
           echo "\\n=== Scheme File Permissions ==="
           find Refreshable.xcodeproj -name "*.xcscheme" -exec ls -la {} \\;
