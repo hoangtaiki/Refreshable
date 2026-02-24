@@ -43,7 +43,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "16.2"
+          xcode-version: "16"
 
       - name: Debug - Check project structure
         run: |
@@ -100,7 +100,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "16.2"
+          xcode-version: "16"
 
       - name: Debug - SPM scheme check
         run: |
