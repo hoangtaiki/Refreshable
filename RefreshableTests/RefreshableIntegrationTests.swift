@@ -1,3 +1,4 @@
+// swiftlint:disable file_length
 //
 //  RefreshableIntegrationTests.swift
 //  Refreshable
