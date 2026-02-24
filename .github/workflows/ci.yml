@@ -45,29 +45,10 @@ jobs:
         with:
           xcode-version: "16"
 
-      - name: Debug - Check project structure
-        run: |
-          echo "=== Project Structure ==="
-          ls -la Refreshable.xcodeproj/
-          echo "\n=== Shared Schemes Directory ==="
-          ls -la Refreshable.xcodeproj/xcshareddata/ || echo "No xcshareddata directory"
-          ls -la Refreshable.xcodeproj/xcshareddata/xcschemes/ || echo "No shared schemes directory"
-          echo "\n=== User Schemes Directory ==="
-          ls -la Refreshable.xcodeproj/xcuserdata/ || echo "No xcuserdata directory"
-          find Refreshable.xcodeproj -name "*.xcscheme" -exec echo "Found scheme: {}" \;
-          echo "\\n=== Git Status of Scheme Files ==="
-          git ls-files Refreshable.xcodeproj/xcshareddata/xcschemes/ || echo "Shared schemes not tracked by git"
-          echo "\\n=== Scheme File Permissions ==="
-          find Refreshable.xcodeproj -name "*.xcscheme" -exec ls -la {} \\;
       - name: Debug - List available schemes
         run: |
           echo "=== Available Schemes and Targets ==="
           xcodebuild -list -project Refreshable.xcodeproj || echo "Failed to list schemes"
-
-      - name: Debug - Show scheme file contents
-        run: |
-          echo "=== Scheme File Contents ==="
-          find Refreshable.xcodeproj -name "Refreshable.xcscheme" -exec echo "Content of {}:" \; -exec cat {} \;
 
       - name: Build and Test
         run: |
