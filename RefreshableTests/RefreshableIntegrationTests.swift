@@ -265,6 +265,11 @@ final class RefreshableIntegrationTests: XCTestCase {
         // Given
         var errorHandled = false
 
+        // When - Force the view to be added to superview
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 568))
+        window.addSubview(tableView)
+        window.makeKeyAndVisible()
+
         tableView.addPullToRefresh { [weak self] in
             // Simulate an error during refresh
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
