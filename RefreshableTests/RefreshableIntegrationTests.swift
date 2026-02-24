@@ -34,6 +34,20 @@ final class RefreshableIntegrationTests: XCTestCase {
     }
 
     override func tearDown() {
+        // Clean up any ongoing refresh/load more operations
+        tableView?.stopPullToRefresh()
+        tableView?.stopLoadMore()
+        collectionView?.stopPullToRefresh()
+        collectionView?.stopLoadMore()
+        scrollView?.stopPullToRefresh()
+        scrollView?.stopLoadMore()
+        
+        // Remove from superview if needed
+        tableView?.removeFromSuperview()
+        collectionView?.removeFromSuperview()
+        scrollView?.removeFromSuperview()
+        
+        // Clear references
         tableView = nil
         collectionView = nil
         scrollView = nil
@@ -48,7 +62,11 @@ final class RefreshableIntegrationTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Refresh completes")
         var refreshCompleted = false
 
-        // When
+        // When - Force the view to be added to superview
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 568))
+        window.addSubview(tableView)
+        window.makeKeyAndVisible()
+
         tableView.addPullToRefresh {
             refreshCompleted = true
             expectation.fulfill()
@@ -102,10 +120,16 @@ final class RefreshableIntegrationTests: XCTestCase {
         tableView.stopLoadMore()
     }
 
-    func testSimultaneousRefreshAndLoadMore() {
+    @MainActor
+    func testSimultaneousRefreshAndLoadMore() async throws {
         // Given
         var refreshCount = 0
         var loadMoreCount = 0
+
+        // When - Force the view to be added to superview
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 568))
+        window.addSubview(tableView)
+        window.makeKeyAndVisible()
 
         tableView.addPullToRefresh {
             refreshCount += 1
@@ -261,8 +285,10 @@ final class RefreshableIntegrationTests: XCTestCase {
 
     // MARK: - Error Handling Tests
 
-    func testErrorDuringRefresh() {
+    @MainActor
+    func testErrorDuringRefresh() async throws {
         // Given
+        let expectation = XCTestExpectation(description: "Error handled during refresh")
         var errorHandled = false
 
         // When - Force the view to be added to superview
@@ -275,22 +301,28 @@ final class RefreshableIntegrationTests: XCTestCase {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 errorHandled = true
                 self?.tableView?.stopPullToRefresh()
+                expectation.fulfill()
             }
         }
 
         // When
         tableView.startPullToRefresh()
 
+        await fulfillment(of: [expectation], timeout: 1.0)
+        
         // Then - Should still handle gracefully
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            XCTAssertTrue(errorHandled)
-        }
+        XCTAssertTrue(errorHandled)
     }
 
     // MARK: - State Consistency Tests
 
-    func testStateConsistencyAfterViewDisappears() {
+    @MainActor
+    func testStateConsistencyAfterViewDisappears() async throws {
         // Given
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 568))
+        window.addSubview(scrollView)
+        window.makeKeyAndVisible()
+
         scrollView.addPullToRefresh {
             // Refresh action
         }
@@ -306,8 +338,65 @@ final class RefreshableIntegrationTests: XCTestCase {
         // Simulate view being removed from superview
         scrollView.removeFromSuperview()
 
+        // Clean up operations
+        scrollView.stopPullToRefresh()
+        scrollView.stopLoadMore()
+
         // Then - Should handle gracefully without crashes
         XCTAssertNotNil(scrollView) // Basic check that object still exists
+        
+        // Verify that operations can be safely stopped even after removal
+        XCTAssertNoThrow(scrollView.stopPullToRefresh())
+        XCTAssertNoThrow(scrollView.stopLoadMore())
+    }
+
+    // MARK: - Collection View Tests
+
+    @MainActor
+    func testCollectionViewRefreshAndLoadMore() async throws {
+        // Given
+        let refreshExpectation = XCTestExpectation(description: "Collection view refresh completes")
+        let loadMoreExpectation = XCTestExpectation(description: "Collection view load more completes")
+        var refreshCompleted = false
+        var loadMoreCompleted = false
+
+        // When - Force the view to be added to superview
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 568))
+        window.addSubview(collectionView)
+        window.makeKeyAndVisible()
+
+        // Set up collection view with content to enable load more
+        collectionView.contentSize = CGSize(width: 320, height: 1_000)
+
+        collectionView.addPullToRefresh {
+            refreshCompleted = true
+            refreshExpectation.fulfill()
+        }
+
+        collectionView.addLoadMore {
+            loadMoreCompleted = true
+            loadMoreExpectation.fulfill()
+        }
+
+        // When - Test pull to refresh
+        collectionView.startPullToRefresh()
+
+        await fulfillment(of: [refreshExpectation], timeout: 1.0)
+
+        // Then - Verify refresh worked
+        XCTAssertTrue(refreshCompleted)
+
+        // When - Test load more
+        collectionView.startLoadMore()
+
+        await fulfillment(of: [loadMoreExpectation], timeout: 1.0)
+
+        // Then - Verify load more worked
+        XCTAssertTrue(loadMoreCompleted)
+
+        // Clean up
+        collectionView.stopPullToRefresh()
+        collectionView.stopLoadMore()
     }
 }
 
