@@ -41,12 +41,12 @@ final class RefreshableIntegrationTests: XCTestCase {
         collectionView?.stopLoadMore()
         scrollView?.stopPullToRefresh()
         scrollView?.stopLoadMore()
-        
+
         // Remove from superview if needed
         tableView?.removeFromSuperview()
         collectionView?.removeFromSuperview()
         scrollView?.removeFromSuperview()
-        
+
         // Clear references
         tableView = nil
         collectionView = nil
@@ -309,7 +309,7 @@ final class RefreshableIntegrationTests: XCTestCase {
         tableView.startPullToRefresh()
 
         await fulfillment(of: [expectation], timeout: 1.0)
-        
+
         // Then - Should still handle gracefully
         XCTAssertTrue(errorHandled)
     }
@@ -344,7 +344,7 @@ final class RefreshableIntegrationTests: XCTestCase {
 
         // Then - Should handle gracefully without crashes
         XCTAssertNotNil(scrollView) // Basic check that object still exists
-        
+
         // Verify that operations can be safely stopped even after removal
         XCTAssertNoThrow(scrollView.stopPullToRefresh())
         XCTAssertNoThrow(scrollView.stopLoadMore())
