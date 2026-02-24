@@ -21,7 +21,7 @@ jobs:
 
   test-ios:
     name: Test iOS
-    runs-on: macos-latest
+    runs-on: macos-14
     strategy:
       matrix:
         destination:
@@ -43,10 +43,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "16.2"
-
-      - name: List available simulators
-        run: xcrun simctl list devices | grep iPhone | head -10
+          xcode-version: "16"
 
       - name: List available schemes
         run: xcodebuild -list -project Refreshable.xcodeproj
@@ -157,7 +154,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "16.2"
+          xcode-version: "16"
 
       - name: Generate Documentation
         run: |
